@@ -1,7 +1,8 @@
 package com.soywiz.korge.intellij
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.util.IconLoader
+import com.intellij.icons.*
+import com.intellij.openapi.util.*
+import com.intellij.ui.*
 import javax.swing.*
 
 // https://jetbrains.design/intellij/resources/icons_list/
@@ -23,6 +24,10 @@ object KorgeIcons {
     @JvmField val SPINE: Icon = getIcon("/com/soywiz/korge/intellij/icon/spine.png")
     @JvmField val DRAGONBONES: Icon = getIcon("/com/soywiz/korge/intellij/icon/dragonbones.png")
 
+    object ToolWindow {
+        @JvmField val STORE: Icon = load("com/soywiz/korge/intellij/icon/toolwindows/toolWindowStore.svg", -100002, 2)
+    }
+
 	val USER_UNKNOWN_BYTES by lazy { getResourceBytes("/com/soywiz/korge/intellij/image/user_unknown.png") }
 
     fun getResourceBytes(path: String): ByteArray? =
@@ -40,4 +45,8 @@ object KorgeIcons {
     }
 
     private fun normalizePath(path: String): String = path.trimStart('/')
+
+    private fun load(path: String, cacheKey: Int, flags: Int): Icon {
+        return IconManager.getInstance().loadRasterizedIcon(path, KorgeIcons::class.java.classLoader, cacheKey, flags)
+    }
 }

@@ -246,7 +246,7 @@
                 id="NewKorgeStoreAction"
                 class="com.soywiz.korge.intellij.actions.KorgeStoreAction"
                 text="KorGE _Store"
-                icon="com.soywiz.korge.intellij.KorgeIcons.JITTO"/>
+                icon="com.soywiz.korge.intellij.KorgeIcons.ToolWindow.STORE"/>
 
         </group>
 
@@ -273,7 +273,7 @@
                 id="KorgeStoreAction"
                 class="com.soywiz.korge.intellij.actions.KorgeStoreAction"
                 text="KorGE _Store"
-                icon="com.soywiz.korge.intellij.KorgeIcons.JITTO"/>
+                icon="com.soywiz.korge.intellij.KorgeIcons.ToolWindow.STORE"/>
             <!--
             <action
                 id="KorgeFixGradleMavenLocalSourcesAction"
@@ -344,6 +344,9 @@
 
 
     <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Korge Resources" anchor="right" icon="AllIcons.Nodes.ResourceBundle"
+                    factoryClass="org.korge.intellij.plugin.toolWindow.KorgeResourceToolWindow" secondary="true" />
+
         <fileEditorProvider
             implementation="com.soywiz.korge.intellij.actions.KorgeWebPreviewEditorProvider"/>
 
