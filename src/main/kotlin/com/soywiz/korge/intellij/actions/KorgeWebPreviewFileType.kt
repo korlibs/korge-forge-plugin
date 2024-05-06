@@ -340,18 +340,19 @@ class KorgeWebPreviewFileEditor(val project: Project, file: KorgeWebPreviewVirtu
                 val baseName = dep.url.pathInfo.baseName
                 val outputName = (dep.output ?: baseName).pathInfo.normalize()
                 runBackgroundableTask("Downloading asset: ${dep.url} to $outputName") {
+                    val rootFile = project.rootFile!!
                     if (dep.unzip == true) {
                         runBlocking {
                             val zip = ZipVfs(downloadUrlCached(dep.url).openAsync())
                             val rootFiles = zip.listSimple()
                             val root = if (rootFiles.size == 1 && rootFiles.first().isDirectory()) rootFiles.first() else zip
                             root.copyToRecursively(
-                                project.rootFile!!.toVfs()["src/commonMain/resources/${outputName.removeSuffix(".zip")}"]
+                                rootFile.toVfs()["resources/${outputName.removeSuffix(".zip")}"]
                             )
-                            project.rootFile?.get("src/commonMain/resources")?.refresh(true, true)
+                            rootFile.get("resources")?.refresh(true, true)
                         }
                     } else {
-                        project.rootFile!!.createFile("src/commonMain/resources/$outputName", downloadUrlCached(dep.url))
+                        rootFile.createFile("resources/$outputName", downloadUrlCached(dep.url))
                     }
                 }
                 //depsKProjectYaml.setText(DepsKProjectYml.addDep(depsKProjectYaml.getText(), it.url, it.removeUrl))

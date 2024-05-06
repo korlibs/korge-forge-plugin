@@ -115,7 +115,7 @@ zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 ]]></file>
 
-<file path="src/commonMain/kotlin/main.kt"><![CDATA[
+<file path="src/main.kt"><![CDATA[
 import korlibs.time.*
 import com.soywiz.korge.*
 import com.soywiz.korge.scene.*
@@ -153,7 +153,7 @@ class MyScene : Scene() {
 }
 ]]></file>
 
-<file path="src/commonTest/kotlin/test.kt"><![CDATA[
+<file path="test/test.kt"><![CDATA[
 import korlibs.time.*
 import com.soywiz.korge.input.*
 import com.soywiz.korge.tests.*
@@ -182,7 +182,7 @@ class MyTest : ViewsForTesting() {
 }
 ]]></file>
 
-<file path="src/commonMain/resources/korge.png" encoding="base64"><![CDATA[
+<file path="resources/korge.png" encoding="base64"><![CDATA[
 iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiTIAAAAzFBMVEUAAAAzAH0x
 AHw5AI81AIQvAHYoAGgxAHw6AI46AI84AIo2AIc0AIIzAH8yAH0wAHktAHgtAHMs
 AHAqAGwpAGkoAGhBGqCHba2bg8magcCWgrU+F4NSLJff3O7////s6vTQyueuocOh

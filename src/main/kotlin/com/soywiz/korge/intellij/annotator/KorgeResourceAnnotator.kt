@@ -107,7 +107,8 @@ class OpenVirtualFileAction(val file: VirtualFile) : AnAction(), DumbAware {
 }
 
 fun Project.getResourceVirtualFile(path: String): VirtualFile? {
-    return rootFile?.get("src/commonMain/resources")?.get(path)
+    return rootFile?.get("resources")?.get(path)
+        ?: rootFile?.get("src/commonMain/resources")?.get(path)
 }
 
 class ResourceIconCache(val project: Project) {
