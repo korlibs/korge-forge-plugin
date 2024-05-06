@@ -9,5 +9,5 @@ plugins {
 
 kproject("./deps")
 
-rootProject.name = "korge-intellij-plugin"
+rootProject.name = "korge-forge-plugin"
 
