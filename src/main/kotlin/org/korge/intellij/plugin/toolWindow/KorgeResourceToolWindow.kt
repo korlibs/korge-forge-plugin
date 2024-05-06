@@ -54,7 +54,7 @@ class KorgeResourceToolWindow : ToolWindowFactory {
         else -> iconCache.get(it) {
           try {
             when (it.extension?.lowercase()) {
-              "jpg", "png", "ase", "qoi" -> {
+              "jpg", "png", "ase", "qoi", "psd" -> {
                 val image = ImageIO.read(it.readBytes().inputStream())
                 ImageIcon(image.getScaledInstanceNew(MAX_SIZE, ScaleMode.SHOW_ALL))
               }
