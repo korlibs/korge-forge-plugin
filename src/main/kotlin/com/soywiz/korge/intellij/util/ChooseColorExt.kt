@@ -6,6 +6,6 @@ import java.awt.Color
 
 fun Editor.chooseColor(color: Color? = null): Color? {
     val editor = this
-    return ColorChooserService.getInstance().showDialog(editor.project,
+    return ColorChooserService.instance.showDialog(editor.project,
         editor.component, "Choose Color", color, true, listOf(), true)
 }

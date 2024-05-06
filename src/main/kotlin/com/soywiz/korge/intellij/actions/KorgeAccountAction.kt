@@ -23,7 +23,7 @@ class KorgeAccountAction : AnAction(), DumbAware {
         //val menu = JBPopupMenu()
         //menu.add("HELLO")
         //menu.show(e.inputEvent.component, 0, 24)
-        val c = e.inputEvent.component
+        val c = e.inputEvent!!.component
         val buttonRect = Rectangle(c.locationOnScreen, c.size )
         val dialogSize = Dimension(220, 234)
 

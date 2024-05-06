@@ -1,6 +1,5 @@
 package com.soywiz.korge.intellij.util
 
-import com.intellij.ide.customize.transferSettings.models.EditorColorScheme
 import com.intellij.openapi.application.*
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -52,7 +51,9 @@ val Project.rootFile: VirtualFile? get() {
 
 fun <T> Project.runReadActionInSmartModeExt(action: () -> T): T {
     if (ApplicationManager.getApplication().isReadAccessAllowed) return action()
-    return DumbService.getInstance(this).runReadActionInSmartMode(action)
+    var result: T? = null
+    DumbService.getInstance(this).runReadActionInSmartMode { result = action() }
+    return result as T
 }
 
 fun <T> invokeAndWaitIfNeededExt(modalityState: ModalityState? = null, runnable: () -> T): T {

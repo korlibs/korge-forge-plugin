@@ -1,5 +1,4 @@
-import org.gradle.api.internal.tasks.compile.ApiCompilerResult
-import org.jetbrains.intellij.tasks.PublishPluginTask
+import org.jetbrains.intellij.tasks.*
 
 buildscript {
     val kotlinVersion: String by project
@@ -17,7 +16,7 @@ buildscript {
 plugins {
     java
     idea
-    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.intellij") version "1.17.3"
     //id("org.jetbrains.intellij") version "1.13.3"
 //    id("org.jetbrains.intellij") version "1.8.1"
 //    id("org.jetbrains.intellij") version "1.7.0"
@@ -117,7 +116,8 @@ intellij {
     //version.set("IC-2021.3.1")
     //version.set("IC-2022.1")
     //version.set("IC-2022.3.2")
-    version.set("IC-2023.1.1")
+    //version.set("IC-2023.1.1")
+    version.set("IC-2024.1.1")
     // Bundled plugin dependencies
     plugins.addAll(
         "gradle",

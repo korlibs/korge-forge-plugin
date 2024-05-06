@@ -18,10 +18,7 @@ import com.soywiz.korge.intellij.util.*
 import java.awt.*
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import javax.swing.BorderFactory
-import javax.swing.JDialog
-import javax.swing.JLabel
-import javax.swing.JOptionPane
+import javax.swing.*
 
 class KorgeJittoAssistantAction : AnAction() {
     override fun update(e: AnActionEvent) {
@@ -34,7 +31,7 @@ class KorgeJittoAssistantAction : AnAction() {
         //val menu = JBPopupMenu()
         //menu.add("HELLO")
         //menu.show(e.inputEvent.component, 0, 24)
-        val c = actionEvent.inputEvent.component
+        val c = actionEvent.inputEvent?.component ?: Container()
         val buttonRect = Rectangle(c.locationOnScreen, c.size )
         val dialogSize = Dimension(220, 120)
 
