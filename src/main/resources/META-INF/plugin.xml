@@ -336,6 +336,9 @@
         -->
 
         <notificationGroup id="Korge Plugin: Maven Local Source Fixer" displayType="BALLOON"/>
+
+        <!--<projectOpenProcessor id="korge" implementation="com.soywiz.korge.intellij.listeners.KorgeProjectOpenProcessor"/>-->
+        <postStartupActivity implementation="com.soywiz.korge.intellij.listeners.KorgeStartupActivity"/>
     </extensions>
 
     <projectListeners>

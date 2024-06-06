@@ -1,10 +1,7 @@
 package com.soywiz.korge.intellij.listeners
 
-import com.intellij.openapi.roots.ModuleRootEvent
-import com.intellij.openapi.roots.ModuleRootListener
-import com.soywiz.korge.intellij.util.LibraryFixer
-import com.soywiz.korge.intellij.util.invokeLater
-import java.util.concurrent.atomic.AtomicBoolean
+import com.intellij.openapi.roots.*
+import com.soywiz.korge.intellij.util.*
 
 class KorgeModuleRootListener : ModuleRootListener {
 
