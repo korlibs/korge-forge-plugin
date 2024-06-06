@@ -1,8 +1,7 @@
 package com.soywiz.korge.intellij.actions
 
 import com.intellij.credentialStore.CredentialAttributes
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -290,6 +289,10 @@ class KorgeJittoAssistantAction : AnAction() {
                 """.trimIndent().trim()
             }
         }
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
     }
 
     /*
