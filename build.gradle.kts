@@ -155,6 +155,13 @@ tasks {
         systemDir.set(File(System.getProperty("user.home"), ".korge/idea-system-dir"))
         //dependsOn(":korge-next:publishJvmPublicationToMavenLocal")
     }
+
+    val extractPluginJars by creating(Sync::class) {
+        dependsOn(buildPlugin)
+        from(zipTree(File(rootDir, "build/distributions/KorgePlugin.zip")))
+        into(File(rootDir, "build/distributions/KorgePlugin"))
+    }
+
 //    val runDebugTilemap by creating(JavaExec::class) {
 //        //classpath = sourceSets.main.runtimeClasspath
 //        classpath = sourceSets["main"].runtimeClasspath + configurations["idea"]
