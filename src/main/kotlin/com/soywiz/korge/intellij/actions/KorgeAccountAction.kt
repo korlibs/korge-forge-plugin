@@ -171,4 +171,8 @@ class KorgeAccountAction : AnAction(), DumbAware {
             else -> AllIcons.General.User
         }
     }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
+    }
 }
