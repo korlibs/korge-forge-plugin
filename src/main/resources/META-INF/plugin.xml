@@ -15,7 +15,8 @@
     <change-notes><!-- language: HTML --><![CDATA[
         <h3>6.0.0</h3>
         <ul>
-            <li>Initial KorGE Forge Version</li>
+            <li>Updates to the latest IntelliJ Version</li>
+            <li>Includes a new Resource Manager</li>
         </ul>
 		]]>
     </change-notes>
