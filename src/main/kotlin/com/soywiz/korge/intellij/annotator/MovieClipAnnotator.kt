@@ -138,7 +138,7 @@ data class MovieClipEditorRenderer(val ktClass: KtClass): GutterIconRenderer() {
         //println(ktClass.text)
     }
 
-    override fun getClickAction(): AnAction = object : AnAction() {
+    override fun getClickAction(): AnAction = object : KorgeEdtAction() {
         override fun actionPerformed(e: AnActionEvent) {
             editMovieClip()
         }

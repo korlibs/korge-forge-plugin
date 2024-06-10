@@ -95,7 +95,7 @@ data class DefaultGutterIconRenderer(val action: AnAction, val _icon: Icon) : Gu
     override fun getTooltipText(): String = "Resource"
 }
 
-class OpenVirtualFileAction(val file: VirtualFile) : AnAction(), DumbAware {
+class OpenVirtualFileAction(val file: VirtualFile) : KorgeAction(), DumbAware {
     fun openFile(project: Project?) {
         file.refresh(false, true)
         project?.fileEditorManager?.openFile(file, true)

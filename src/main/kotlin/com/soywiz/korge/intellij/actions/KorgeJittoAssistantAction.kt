@@ -19,7 +19,7 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import javax.swing.*
 
-class KorgeJittoAssistantAction : AnAction() {
+class KorgeJittoAssistantAction : KorgeAction(updateThread = ActionUpdateThread.BGT) {
     override fun update(e: AnActionEvent) {
         val isSoywiz = korgeGlobalPrivateSettings.isUserLoggedIn() && korgeGlobalPrivateSettings.userLogin == "soywiz"
         e.presentation.isVisible = isSoywiz && e.project?.korge?.containsKorge == true
@@ -289,10 +289,6 @@ class KorgeJittoAssistantAction : AnAction() {
                 """.trimIndent().trim()
             }
         }
-    }
-
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
     }
 
     /*

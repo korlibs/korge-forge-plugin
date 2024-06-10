@@ -14,7 +14,6 @@ import com.soywiz.korge.intellij.resolver.*
 import com.soywiz.korge.intellij.util.*
 import korlibs.image.color.*
 import korlibs.image.color.Colors
-import org.jetbrains.kotlin.idea.core.resolveType
 import org.jetbrains.kotlin.psi.*
 import java.awt.*
 import javax.swing.*
@@ -171,7 +170,7 @@ data class GutterColorRenderer(val element: PsiElement, val color: Color): Gutte
     }
 
     override fun getClickAction(): AnAction? {
-        return object : AnAction() {
+        return object : KorgeAction() {
             override fun actionPerformed(e: AnActionEvent) {
                 chooseColor()
             }

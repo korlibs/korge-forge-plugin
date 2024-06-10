@@ -1,15 +1,12 @@
 package com.soywiz.korge.intellij.actions
 
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
 import com.soywiz.korge.intellij.config.korgeGlobalPrivateSettings
 import com.soywiz.korge.intellij.korge
-import kotlinx.coroutines.*
-import java.awt.*
-import javax.swing.*
+import com.soywiz.korge.intellij.util.*
 
-class KorgeLoginAction : AnAction(), DumbAware {
+class KorgeLoginAction : KorgeAction(), DumbAware {
     override fun update(e: AnActionEvent) {
         //e.presentation.text = "_something"
         //println("KorgeLoginAction.update")
@@ -22,7 +19,7 @@ class KorgeLoginAction : AnAction(), DumbAware {
     }
 }
 
-class KorgeLogoutAction : AnAction(), DumbAware {
+class KorgeLogoutAction : KorgeAction(), DumbAware {
     override fun update(e: AnActionEvent) {
         e.presentation.text = "_Logout ${korgeGlobalPrivateSettings.userLogin} (${korgeGlobalPrivateSettings.userRank})"
         //println("KorgeLoginAction.update")

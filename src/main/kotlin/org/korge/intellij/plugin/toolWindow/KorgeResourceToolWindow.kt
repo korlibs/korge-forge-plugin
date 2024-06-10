@@ -98,13 +98,13 @@ class KorgeResourceToolWindow : ToolWindowFactory {
     val content: Content = ContentFactory.getInstance().createContent(gridPreview, "", false)
     toolWindow.contentManager.addContent(content)
     toolWindow.setTitleActions(listOf(
-        object : AnAction("Refresh", "Refresh files", AllIcons.Actions.Refresh) {
+        object : KorgeAction("Refresh", "Refresh files", AllIcons.Actions.Refresh) {
           override fun actionPerformed(e: AnActionEvent) {
             iconCache.invalidateAll()
             setFolder(currentFolder)
           }
         },
-        object : AnAction("Root", "Go Root", AllIcons.Actions.MoveUp) {
+        object : KorgeAction("Root", "Go Root", AllIcons.Actions.MoveUp) {
             override fun actionPerformed(e: AnActionEvent) {
                 iconCache.invalidateAll()
                 setFolder(baseDir)

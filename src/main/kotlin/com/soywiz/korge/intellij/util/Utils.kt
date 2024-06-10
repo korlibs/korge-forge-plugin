@@ -157,7 +157,7 @@ inline fun <T> runWriteAction(crossinline runnable: () -> T): T {
 
 object RunWriteActionNoWaitClass
 
-class MyWriteAction(val runnable: () -> Unit) : AnAction() {
+class MyWriteAction(val runnable: () -> Unit) : KorgeAction() {
     override fun actionPerformed(e: AnActionEvent) {
         runnable()
     }

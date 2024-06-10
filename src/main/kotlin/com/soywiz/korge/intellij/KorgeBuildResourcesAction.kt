@@ -2,11 +2,12 @@ package com.soywiz.korge.intellij
 
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.*
+import com.soywiz.korge.intellij.util.*
 import korlibs.io.file.*
 import kotlinx.coroutines.*
 import org.jetbrains.jps.model.java.*
 
-class KorgeBuildResourcesAction : AnAction() {
+class KorgeBuildResourcesAction : KorgeAction() {
 	override fun actionPerformed(anActionEvent: AnActionEvent) {
 		val project = anActionEvent.project
 		if (project != null) KorgeBuildResourcesAction.build(project)

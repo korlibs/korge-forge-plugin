@@ -1,13 +1,13 @@
 package com.soywiz.korge.intellij.actions
 
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.soywiz.korge.intellij.config.korgeGlobalSettings
 import com.soywiz.korge.intellij.korge
+import com.soywiz.korge.intellij.util.*
 
-class KorgeStoreAction : AnAction(), DumbAware {
+class KorgeStoreAction : KorgeAction(), DumbAware {
     override fun actionPerformed(e: AnActionEvent) {
         openStore(e.project ?: return)
     }

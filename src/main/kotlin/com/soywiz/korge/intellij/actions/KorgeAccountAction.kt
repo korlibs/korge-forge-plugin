@@ -2,10 +2,8 @@ package com.soywiz.korge.intellij.actions
 
 import com.intellij.icons.*
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.fileEditor.impl.*
 import com.intellij.openapi.project.*
 import com.intellij.util.ui.JBImageIcon
-import korlibs.korge.awt.*
 import com.soywiz.korge.intellij.*
 import com.soywiz.korge.intellij.config.*
 import com.soywiz.korge.intellij.image.*
@@ -17,7 +15,7 @@ import java.awt.AWTEvent
 import java.awt.event.*
 import javax.swing.*
 
-class KorgeAccountAction : AnAction(), DumbAware {
+class KorgeAccountAction : KorgeAction(), DumbAware {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project
         //val menu = JBPopupMenu()
@@ -170,9 +168,5 @@ class KorgeAccountAction : AnAction(), DumbAware {
             korgeGlobalPrivateSettings.isUserLoggedIn() -> korgeGlobalPrivateSettings.getAvatarIcon()
             else -> AllIcons.General.User
         }
-    }
-
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
     }
 }
