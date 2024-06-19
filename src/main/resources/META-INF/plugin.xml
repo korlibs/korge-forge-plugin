@@ -173,6 +173,7 @@
 
         <fileEditorProvider
             implementation="com.soywiz.korge.intellij.actions.KorgeWebPreviewEditorProvider"/>
+        <fileEditorProvider id="KotlinKorgeWithPreviewFileEditorProvider" implementation="com.soywiz.korge.intellij.actions.KotlinKorgeWithPreviewFileEditorProvider"/>
 
         <applicationConfigurable
             groupId="language"

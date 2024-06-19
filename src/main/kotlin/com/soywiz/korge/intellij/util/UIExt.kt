@@ -130,10 +130,10 @@ enum class TdSize(val value: Int) {
 
 val <T> JComboBox<T>.items get() = (0 until this.itemCount).map { getItemAt(it) }
 
-fun <T : JButton> T.onClick(callback: () -> Unit): T = this.apply {
+fun <T : JButton> T.onClick(callback: (MouseEvent) -> Unit): T = this.apply {
 	addMouseListener(object : MouseAdapter() {
 		override fun mouseClicked(e: MouseEvent) {
-			callback()
+			callback(e)
 		}
 	})
 }

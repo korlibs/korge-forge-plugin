@@ -6,6 +6,7 @@ import com.intellij.execution.actions.*
 import com.intellij.execution.configurations.*
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.icons.*
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.wm.*
@@ -37,6 +38,49 @@ fun MyFunc() {
     }
 }
 
+class KorgePreviewPlayAction(val ipc: KorgeIPC? = null, val panel: KorgeIPCJPanel? = null) : KorgeAction("Play", "Play", AllIcons.Actions.Execute) {
+    override fun actionPerformed(e: AnActionEvent) {
+        KorgePreviewTool.play(e, ipc, panel)
+    }
+}
+
+class KorgePreviewStopAction : KorgeAction("Stop", "Stop", AllIcons.Actions.Suspend) {
+    override fun actionPerformed(e: AnActionEvent) {
+        KorgePreviewTool.stop(e)
+    }
+}
+
+object KorgePreviewTool {
+    fun play(e: AnActionEvent, ipc: KorgeIPC? = null, panel: KorgeIPCJPanel? = null) {
+        val project: Project = e.project ?: return
+        //e.project?.getService(Runcon::class.java)
+        //RunAction
+        //RunContextAction(DefaultRunExecutor()).actionPerformed(e)
+        //GradleRunConfiguration(project, null, "runJvmAutoreload")
+        val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview)", select = false) {
+            it.settings.env["KORGE_IPC"] = ipc?.path ?: KorgeIPC.DEFAULT_PATH
+        }
+        //set.
+
+        //val runManager = RunManager.getInstance(project)
+        ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
+        panel?.requestFocusInWindow()
+
+        //// Find a specific run configuration by name
+        //val configurationName = "YourConfigurationName"
+        //val settings: RunnerAndConfigurationSettings? = runManager.allSettings.find { it.name == configurationName }
+        //if (settings != null) {
+        //    ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
+        //} else {
+        //    // Handle the case where the configuration is not found
+        //    println("Run configuration '$configurationName' not found.")
+        //}
+    }
+    fun stop(e: AnActionEvent) {
+        StopAction().actionPerformed(e)
+    }
+}
+
 class KorgePreviewToolWindow : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
 
@@ -51,38 +95,8 @@ class KorgePreviewToolWindow : ToolWindowFactory {
 
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
         toolWindow.setTitleActions(listOf(
-            object : KorgeAction("Play", "Play", AllIcons.Actions.Execute) {
-                override fun actionPerformed(e: AnActionEvent) {
-                    val project: Project = e.project ?: return
-                    //e.project?.getService(Runcon::class.java)
-                    //RunAction
-                    //RunContextAction(DefaultRunExecutor()).actionPerformed(e)
-                    //GradleRunConfiguration(project, null, "runJvmAutoreload")
-                    val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview)", select = false) {
-                        it.settings.env["KORGE_IPC"] = ipc.path
-                    }
-                    //set.
-
-                    //val runManager = RunManager.getInstance(project)
-                    ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
-                    panel.requestFocusInWindow()
-
-                    //// Find a specific run configuration by name
-                    //val configurationName = "YourConfigurationName"
-                    //val settings: RunnerAndConfigurationSettings? = runManager.allSettings.find { it.name == configurationName }
-                    //if (settings != null) {
-                    //    ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
-                    //} else {
-                    //    // Handle the case where the configuration is not found
-                    //    println("Run configuration '$configurationName' not found.")
-                    //}
-                }
-            },
-            object : KorgeAction("Stop", "Stop", AllIcons.Actions.Suspend) {
-                override fun actionPerformed(e: AnActionEvent) {
-                    StopAction().actionPerformed(e)
-                }
-            }
+            KorgePreviewPlayAction(ipc, panel),
+            KorgePreviewStopAction(),
         ))
 
         toolWindow.show()
@@ -91,7 +105,7 @@ class KorgePreviewToolWindow : ToolWindowFactory {
 
 //class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JPanel(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener {
 //class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JLabel(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener {
-class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener, ComponentListener {
+class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener, ComponentListener, Disposable {
     var lastFrame: IPCFrame? = null
     var image: BufferedImage? = null
     var currentFrameId = -1
@@ -144,6 +158,7 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
                 renderLoop = doRenderLoop()
             } else {
                 renderLoop?.close()
+                renderLoop = null
             }
         }
     }
@@ -256,4 +271,8 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
 
     override fun focusGained(e: FocusEvent) = Unit
     override fun focusLost(e: FocusEvent) = Unit
+    override fun dispose() {
+        renderLoop?.close()
+        renderLoop = null
+    }
 }
