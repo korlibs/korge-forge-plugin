@@ -1,6 +1,10 @@
 package org.korge.intellij.plugin.toolWindow
 
 import androidx.compose.runtime.*
+import com.intellij.execution.*
+import com.intellij.execution.actions.*
+import com.intellij.execution.configurations.*
+import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.icons.*
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.*
@@ -8,11 +12,14 @@ import com.intellij.openapi.wm.*
 import com.intellij.ui.*
 import com.intellij.ui.content.*
 import com.intellij.util.ui.*
+import com.soywiz.korge.intellij.*
 import com.soywiz.korge.intellij.util.*
 import korge.composable.*
 import korlibs.io.lang.*
 import korlibs.korge.ipc.*
 import korlibs.time.*
+import org.jetbrains.kotlin.tools.projectWizard.core.service.*
+import org.jetbrains.plugins.gradle.service.execution.*
 import java.awt.*
 import java.awt.event.*
 import java.awt.image.*
@@ -37,16 +44,41 @@ class KorgePreviewToolWindow : ToolWindowFactory {
         //    MyFunc()
         //}
 
-        val panel = KorgeIPCJPanel()
+        val ipc = KorgeIPC()
+        ipc.resetEvents()
+        val panel = KorgeIPCJPanel(ipc)
 
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
         toolWindow.setTitleActions(listOf(
-            object : KorgeAction("Play", "Play", AllIcons.Actions.Play_forward) {
+            object : KorgeAction("Play", "Play", AllIcons.Actions.Execute) {
                 override fun actionPerformed(e: AnActionEvent) {
+                    val project: Project = e.project ?: return
+                    //e.project?.getService(Runcon::class.java)
+                    //RunAction
+                    //RunContextAction(DefaultRunExecutor()).actionPerformed(e)
+                    //GradleRunConfiguration(project, null, "runJvmAutoreload")
+                    val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview)", select = false) {
+                        it.settings.env["KORGE_IPC"] = ipc.path
+                    }
+                    //set.
+
+                    //val runManager = RunManager.getInstance(project)
+                    ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
+
+                    //// Find a specific run configuration by name
+                    //val configurationName = "YourConfigurationName"
+                    //val settings: RunnerAndConfigurationSettings? = runManager.allSettings.find { it.name == configurationName }
+                    //if (settings != null) {
+                    //    ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
+                    //} else {
+                    //    // Handle the case where the configuration is not found
+                    //    println("Run configuration '$configurationName' not found.")
+                    //}
                 }
             },
-            object : KorgeAction("Stop", "Stop", AllIcons.Actions.StopRefresh) {
+            object : KorgeAction("Stop", "Stop", AllIcons.Actions.Suspend) {
                 override fun actionPerformed(e: AnActionEvent) {
+                    StopAction().actionPerformed(e)
                 }
             }
         ))
@@ -105,6 +137,7 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
     override fun hierarchyChanged(e: HierarchyEvent) {
         if ((e.changeFlags and HierarchyEvent.SHOWING_CHANGED.toLong()) != 0L) {
             if (isShowing) {
+                sendEv(IPCEvent.BRING_BACK)
                 renderLoop?.close()
                 renderLoop = doRenderLoop()
             } else {
@@ -112,7 +145,6 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
             }
         }
     }
-
 
     override fun paint(g: Graphics) {
         //println("Paint: ${Thread.currentThread()}")
@@ -122,7 +154,7 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
             g.color = JBColor.PanelBackground
             g.fillRect(0, 0, width, height)
             g.color = JBColor.foreground()
-            g.drawString("Not running yet...", 25, 25)
+            g.drawString("Not running yet... Press the play icon to start", 25, 25)
         }
     }
 
@@ -148,19 +180,31 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
         repaint()
     }
 
-    val devicePixelRatio: Double get() {
-        return JBUI.pixScale().toDouble()
-        //val defaultScreenDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice
-        //val defaultConfiguration = defaultScreenDevice.defaultConfiguration
-        //val defaultTransform = defaultConfiguration.defaultTransform
-        //return defaultTransform.scaleX
-    }
+    //val devicePixelRatio: Double get() {
+    //    return JBUI.pixScale().toDouble()
+    //    //val defaultScreenDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice
+    //    //val defaultConfiguration = defaultScreenDevice.defaultConfiguration
+    //    //val defaultTransform = defaultConfiguration.defaultTransform
+    //    //return defaultTransform.scaleX
+    //}
+    //val Component.devicePixelRatio: Double get() {
+    //    if (GraphicsEnvironment.isHeadless()) {
+    //        return 1.0
+    //    } else {
+    //        // transform
+    //        // https://stackoverflow.com/questions/20767708/how-do-you-detect-a-retina-display-in-java
+    //        val config = graphicsConfiguration
+    //            ?: GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.defaultConfiguration
+    //        return config.defaultTransform.scaleX
+    //    }
+    //}
 
     private fun sendEv(type: Int, p0: Int = 0, p1: Int = 0, p2: Int = 0, p3: Int = 0) = ipc.writeEvent(IPCEvent(type = type, p0 = p0, p1 = p1, p2 = p2, p3 = p3))
     private fun sendEv(type: Int, e: KeyEvent) = sendEv(type = type, p0 = e.keyCode, p1 = e.keyChar.code)
     private fun sendEv(type: Int, e: MouseEvent) {
         //val ratio = 1.0 / devicePixelRatio
-        val ratio = devicePixelRatio
+        val ratio = JBUI.pixScale().toDouble()
+        //println("ratio=$ratio, jb=${JBUI.pixScale().toDouble()}")
         sendEv(type = type, p0 = (e.x * ratio).toInt(), p1 = (e.y * ratio).toInt(), p2 = e.button)
     }
     override fun keyTyped(e: KeyEvent) = sendEv(IPCEvent.KEY_TYPE, e)
@@ -182,7 +226,7 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
     }
 
     override fun componentResized(e: ComponentEvent) {
-        println("componentResized: width=$width, height=$height")
+        //println("componentResized: width=$width, height=$height")
         sendEv(IPCEvent.RESIZE, e.component.width, e.component.height)
     }
     override fun componentMoved(e: ComponentEvent) {
