@@ -45,7 +45,8 @@ class KorgePreviewToolWindow : ToolWindowFactory {
         //}
 
         val ipc = KorgeIPC()
-        //ipc.resetEvents()
+        ipc.resetEvents()
+        repeat(2) { ipc.writeEvent(IPCEvent(type = IPCEvent.BRING_BACK)) }
         val panel = KorgeIPCJPanel(ipc)
 
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
