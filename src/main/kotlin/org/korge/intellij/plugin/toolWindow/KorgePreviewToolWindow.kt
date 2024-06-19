@@ -1,11 +1,14 @@
 package org.korge.intellij.plugin.toolWindow
 
 import androidx.compose.runtime.*
+import com.intellij.icons.*
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.wm.*
-import com.intellij.ui.JBColor
+import com.intellij.ui.*
 import com.intellij.ui.content.*
-import com.jetbrains.rd.util.string.*
+import com.intellij.util.ui.*
+import com.soywiz.korge.intellij.util.*
 import korge.composable.*
 import korlibs.io.lang.*
 import korlibs.korge.ipc.*
@@ -37,20 +40,16 @@ class KorgePreviewToolWindow : ToolWindowFactory {
         val panel = KorgeIPCJPanel()
 
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
-        //toolWindow.setTitleActions(listOf(
-        //    object : KorgeAction("Refresh", "Refresh files", AllIcons.Actions.Refresh) {
-        //        override fun actionPerformed(e: AnActionEvent) {
-        //            iconCache.invalidateAll()
-        //            setFolder(currentFolder)
-        //        }
-        //    },
-        //    object : KorgeAction("Root", "Go Root", AllIcons.Actions.MoveUp) {
-        //        override fun actionPerformed(e: AnActionEvent) {
-        //            iconCache.invalidateAll()
-        //            setFolder(baseDir)
-        //        }
-        //    }
-        //))
+        toolWindow.setTitleActions(listOf(
+            object : KorgeAction("Play", "Play", AllIcons.Actions.Play_forward) {
+                override fun actionPerformed(e: AnActionEvent) {
+                }
+            },
+            object : KorgeAction("Stop", "Stop", AllIcons.Actions.StopRefresh) {
+                override fun actionPerformed(e: AnActionEvent) {
+                }
+            }
+        ))
 
         toolWindow.show()
     }
@@ -149,9 +148,21 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
         repaint()
     }
 
+    val devicePixelRatio: Double get() {
+        return JBUI.pixScale().toDouble()
+        //val defaultScreenDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice
+        //val defaultConfiguration = defaultScreenDevice.defaultConfiguration
+        //val defaultTransform = defaultConfiguration.defaultTransform
+        //return defaultTransform.scaleX
+    }
+
     private fun sendEv(type: Int, p0: Int = 0, p1: Int = 0, p2: Int = 0, p3: Int = 0) = ipc.writeEvent(IPCEvent(type = type, p0 = p0, p1 = p1, p2 = p2, p3 = p3))
     private fun sendEv(type: Int, e: KeyEvent) = sendEv(type = type, p0 = e.keyCode, p1 = e.keyChar.code)
-    private fun sendEv(type: Int, e: MouseEvent) = sendEv(type = type, p0 = e.x, p1 = e.y, p2 = e.button)
+    private fun sendEv(type: Int, e: MouseEvent) {
+        //val ratio = 1.0 / devicePixelRatio
+        val ratio = devicePixelRatio
+        sendEv(type = type, p0 = (e.x * ratio).toInt(), p1 = (e.y * ratio).toInt(), p2 = e.button)
+    }
     override fun keyTyped(e: KeyEvent) = sendEv(IPCEvent.KEY_TYPE, e)
     override fun keyPressed(e: KeyEvent) = sendEv(IPCEvent.KEY_DOWN, e)
     override fun keyReleased(e: KeyEvent) = sendEv(IPCEvent.KEY_UP, e)
