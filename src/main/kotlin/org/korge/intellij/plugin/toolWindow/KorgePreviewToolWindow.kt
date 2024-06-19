@@ -45,7 +45,7 @@ class KorgePreviewToolWindow : ToolWindowFactory {
         //}
 
         val ipc = KorgeIPC()
-        ipc.resetEvents()
+        //ipc.resetEvents()
         val panel = KorgeIPCJPanel(ipc)
 
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
@@ -64,6 +64,7 @@ class KorgePreviewToolWindow : ToolWindowFactory {
 
                     //val runManager = RunManager.getInstance(project)
                     ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
+                    panel.requestFocusInWindow()
 
                     //// Find a specific run configuration by name
                     //val configurationName = "YourConfigurationName"
