@@ -14,11 +14,7 @@ import korlibs.audio.sound.readMusic
 import com.soywiz.korge.intellij.toVfs
 import com.soywiz.korge.intellij.util.backgroundTask
 import com.soywiz.korge.intellij.util.onClick
-import korlibs.audio.format.AudioDecodingProps
-import korlibs.audio.format.AudioFormats
-import korlibs.audio.format.MP3
-import korlibs.audio.format.WAV
-import korlibs.audio.format.mp3.MP3Decoder
+import korlibs.audio.format.*
 import korlibs.audio.mod.MOD
 import korlibs.audio.mod.S3M
 import korlibs.audio.mod.XM

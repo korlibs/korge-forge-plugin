@@ -9,8 +9,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 import com.soywiz.korge.intellij.getService
 import com.soywiz.korge.intellij.image.KorimImageReaderRegister
 import com.soywiz.korge.intellij.util.getResourceText
-import korlibs.time.days
-import korlibs.time.milliseconds
+import korlibs.time.*
 import java.net.URL
 
 @State(

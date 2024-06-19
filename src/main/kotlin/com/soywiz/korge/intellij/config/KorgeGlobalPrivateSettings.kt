@@ -1,34 +1,29 @@
 package com.soywiz.korge.intellij.config
 
 import com.intellij.codeInsight.daemon.*
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
+import com.intellij.ide.projectView.*
+import com.intellij.notification.*
 import com.intellij.openapi.components.*
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.project.*
+import com.intellij.openapi.ui.*
+import com.intellij.util.ui.*
 import com.intellij.util.xmlb.*
-import korlibs.time.*
 import com.soywiz.korge.intellij.*
+import com.soywiz.korge.intellij.internal.*
+import com.soywiz.korge.intellij.ui.*
 import com.soywiz.korge.intellij.util.*
-import korlibs.io.async.delay
-import korlibs.io.async.launchImmediately
+import korlibs.io.async.*
+import korlibs.io.dynamic.Dyn
 import korlibs.io.serialization.json.Json
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import korlibs.time.*
+import kotlinx.coroutines.*
 import java.awt.*
 import java.awt.image.*
 import java.net.*
 import java.util.*
 import javax.imageio.*
 import javax.swing.*
-import kotlin.coroutines.EmptyCoroutineContext
-import com.intellij.ide.projectView.ProjectView
-import com.intellij.util.ui.ImageUtil
-import com.intellij.util.ui.JBImageIcon
-import com.soywiz.korge.intellij.internal.dyn
-import com.soywiz.korge.intellij.ui.DialogSettings
-import com.soywiz.korge.intellij.ui.showNewDialog
-import korlibs.io.dynamic.Dyn
+import kotlin.coroutines.*
 
 @State(
 	name = "KorgeGlobalPrivateSettings",
@@ -67,9 +62,9 @@ open class KorgeGlobalPrivateSettings : PersistentStateComponent<KorgeGlobalPriv
 			//userAvatarBytes = Base64.encode(img.toJpegBytes(.8f))
 			val bytes = userAvatar?.let { URL(it).readBytes() } ?: KorgeIcons.USER_UNKNOWN_BYTES ?: byteArrayOf()
 
-			userAvatarBytes = korlibs.crypto.encoding.Base64.encode(bytes)
+			userAvatarBytes = korlibs.encoding.Base64.encode(bytes)
 		}
-		return korlibs.crypto.encoding.Base64.decode(userAvatarBytes!!)
+		return korlibs.encoding.Base64.decode(userAvatarBytes!!)
 	}
 
 	fun getAvatarBitmap(): BufferedImage {

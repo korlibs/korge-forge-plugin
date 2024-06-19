@@ -130,8 +130,12 @@ class KorgeWebPreviewFileEditor(val project: Project, file: KorgeWebPreviewVirtu
     //private val jbClient = jbApp.createClient().also {
     //    it.setProperty(JBCefClient.Properties.JS_QUERY_POOL_SIZE, RegistryManager.getInstance().intValue("ide.browser.jcef.jsQueryPoolSize"))
     //}
-    //private val myPanel: JCEFHtmlPanel = JCEFHtmlPanel(jbClient, "")
-    private val myPanel: JCEFHtmlPanel = JCEFHtmlPanel("").also {
+    @Suppress("MissingRecentApi")
+    private val jbClient = JBCefBrowser.create(JBCefBrowserBuilder().also {
+        it.setWindowlessFramerate(60)
+    }).jbCefClient
+    private val myPanel: JCEFHtmlPanel = JCEFHtmlPanel(jbClient, "").also {
+    //private val myPanel: JCEFHtmlPanel = JCEFHtmlPanel(true, "").also {
         it.setPageBackgroundColor(UIUtil.getPanelBackground().toRgba().toString())
     }
     private var disposables = arrayListOf<Disposable>()

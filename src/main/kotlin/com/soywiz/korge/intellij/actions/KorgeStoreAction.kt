@@ -3,6 +3,7 @@ package com.soywiz.korge.intellij.actions
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.ui.jcef.JCEFHtmlPanel
 import com.soywiz.korge.intellij.config.korgeGlobalSettings
 import com.soywiz.korge.intellij.korge
 import com.soywiz.korge.intellij.util.*
@@ -30,5 +31,6 @@ class KorgeStoreAction : KorgeAction(), DumbAware {
 
 val STORE_PREFIX get() = when {
     korgeGlobalSettings.useLocalStore -> "http://127.0.0.1:4000"
-    else -> "https://store.korge.org"
+    //else -> "https://store.korge.org"
+    else -> "https://show.korge.org/#BunnymarkScene"
 }

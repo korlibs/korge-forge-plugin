@@ -1,12 +1,11 @@
 package com.soywiz.korge.intellij.util
 
-import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.progress.runBackgroundableTask
-import korlibs.io.file.std.get
-import korlibs.crypto.encoding.hexLower
-import java.io.File
-import java.net.URL
-import java.security.MessageDigest
+import com.intellij.openapi.application.*
+import korlibs.encoding.*
+import korlibs.io.file.std.*
+import java.io.*
+import java.net.*
+import java.security.*
 
 fun File.ensureParents(): File = this.also { it.parentFile.mkdirs() }
 

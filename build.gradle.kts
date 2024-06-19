@@ -84,39 +84,13 @@ val korgeVersion: String by project
 val kotlinVersion: String by project
 
 dependencies {
-    //implementation("com.soywiz.korlibs.korge.plugins:korge-build:$korgeVersion")
-
-    // @TODO: Dependency substitution: https://docs.gradle.org/current/userguide/composite_builds.html
-
-    //implementation("com.soywiz.kproject:kproject-common:0.2.6")
-    implementation(project(":deps"))
-    implementation("com.soywiz.korlibs.korge2:korge-jvm:$korgeVersion")
-    //implementation("com.soywiz.korlibs.korge2:korge-dragonbones-jvm:$korgeVersion")
-    //implementation("com.soywiz.korlibs.korge2:korge-spine-jvm:$korgeVersion")
-    //implementation("com.soywiz.korlibs.korge2:korge-swf-jvm:$korgeVersion")
-    //implementation("com.soywiz.korlibs.kbox2d:kbox2d-jvm:$kbox2dVersion")
+    implementation("com.soywiz.korge:korge-jvm:$korgeVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
-    //implementation("com.cjcrafter:openai:1.3.0")
-    //implementation("pw.mihou:Dotenv:1.0.1")
-    //implementation("com.squareup.okhttp3:okhttp:4.9.2")
-
-    //implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8")
-    //implementation("javax.xml.bind:jaxb-api:2.3.1")
-    //implementation("com.sun.xml.bind:jaxb-impl:2.3.1")
-    //implementation("net.sourceforge.mydoggy:mydoggy:1.4.2")
-    //implementation("net.sourceforge.mydoggy:mydoggy-plaf:1.4.2")
-    //implementation("net.sourceforge.mydoggy:mydoggy-api:1.4.2")
-    //implementation("net.sourceforge.mydoggy:mydoggy-res:1.4.2")
-    //implementation(project(":korge-build"))
 }
 
 intellij {
     // IntelliJ IDEA dependency
-    //version.set("IC-2021.3.1")
-    //version.set("IC-2022.1")
-    //version.set("IC-2022.3.2")
-    //version.set("IC-2023.1.1")
     version.set("IC-2024.1.1")
     // Bundled plugin dependencies
     plugins.addAll(

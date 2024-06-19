@@ -1,19 +1,13 @@
 package com.soywiz.korge.intellij.audio
 
-import com.jetbrains.rd.util.string.print
-import korlibs.datastructure.*
-import korlibs.time.*
 import korlibs.audio.error.*
 import korlibs.audio.format.*
 import korlibs.audio.sound.*
-import korlibs.audio.sound.backends.ALSANativeSoundProvider
-import korlibs.audio.sound.backends.ASound2
-import korlibs.datastructure.lock.Lock
-import korlibs.datastructure.thread.NativeThread
+import korlibs.datastructure.*
 import korlibs.io.async.*
 import korlibs.io.stream.*
-import korlibs.memory.clamp01
-import korlibs.memory.write16LE
+import korlibs.memory.*
+import korlibs.time.*
 import java.io.*
 import java.nio.*
 import javax.sound.sampled.*
@@ -229,7 +223,7 @@ class JvmPlatformAudioOutput(
         val bb = ByteArray(buff.channels * buff.totalSamples * BYTES_PER_VALUE)
         for (n in 0 until size) {
             for (ch in 0 until buff.channels) {
-                bb.write16LE((n * buff.channels + ch) * BYTES_PER_VALUE, buff[ch, n].toInt())
+                bb.set16LE((n * buff.channels + ch) * BYTES_PER_VALUE, buff[ch, n].toInt())
             }
         }
         return bb
