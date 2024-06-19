@@ -21,5 +21,18 @@ class KorgeStartupActivity : ProjectActivity {
             }
             //toolbox?.activate(null)
         }
+        ApplicationManager.getApplication().invokeLater {
+            val toolbox = ToolWindowManager.getInstance(project).getToolWindow("Korge Preview")
+            println("KorgeStartupActivity.execute: toolbox=$toolbox")
+            //toolbox?.isVisible = true
+            //toolbox?.anchor = ToolWindowAnchor.RIGHT
+            if (toolbox != null) {
+                if (!toolbox.isVisible) {
+                    toolbox.show()
+                    toolbox.hide()
+                }
+            }
+            //toolbox?.activate(null)
+        }
     }
 }

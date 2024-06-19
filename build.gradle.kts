@@ -1,31 +1,12 @@
 import org.jetbrains.intellij.tasks.*
 
-buildscript {
-    val kotlinVersion: String by project
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url = uri("https://plugins.gradle.org/m2/") }
-    }
-    dependencies {
-        classpath("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:$kotlinVersion")
-    }
-}
-
 plugins {
     java
     idea
     id("org.jetbrains.intellij") version "1.17.3"
-    //id("org.jetbrains.intellij") version "1.13.3"
-//    id("org.jetbrains.intellij") version "1.8.1"
-//    id("org.jetbrains.intellij") version "1.7.0"
-    //id("org.jetbrains.intellij") version "1.5.3" //
-    //id("org.jetbrains.intellij") version "1.5.2" //
-    //id("org.jetbrains.intellij") version "1.4.0"
+    kotlin("jvm") version "2.0.0"
+    kotlin("plugin.compose") version "2.0.0"
 }
-
-apply(plugin = "kotlin")
 
 //val jvmVersion = JavaLanguageVersion.of(8)
 //
@@ -77,16 +58,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     google()
-}
-
-val kbox2dVersion: String by project
-val korgeVersion: String by project
-val kotlinVersion: String by project
-
-dependencies {
-    implementation("com.soywiz.korge:korge-jvm:$korgeVersion")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
 
 intellij {
@@ -155,3 +126,14 @@ tasks {
 }
 
 //println(gradle.includedBuilds)
+
+val korgeVersion: String by project
+val kotlinVersion: String by project
+
+dependencies {
+    implementation("com.soywiz.korge:korge-jvm:$korgeVersion")
+    implementation("com.soywiz.korge:korge-ipc:$korgeVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+    implementation("org.jetbrains.compose.runtime:runtime:1.6.11")
+}

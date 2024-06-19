@@ -5,6 +5,7 @@
 /velocity.log
 *.iml
 .DS_Store
+/.kotlin
 
 /deps
 /modules
