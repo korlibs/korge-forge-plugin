@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.impl.text.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.util.*
 import com.intellij.openapi.vfs.*
+import com.soywiz.korge.intellij.config.*
 import org.jetbrains.kotlin.idea.util.*
 import org.korge.intellij.plugin.toolWindow.*
 
@@ -44,7 +45,7 @@ class KotlinKorgeFileEditorWithPreview private constructor(
     val vfile: VirtualFile,
     sourceTextEditor: TextEditor,
     previewEditor: FileEditor
-) : TextEditorWithPreview(sourceTextEditor, previewEditor), TextEditor {
+) : TextEditorWithPreview(sourceTextEditor, previewEditor, "KorGE Preview", if (korgeGlobalSettings.korgeSplitWindowByDefault) TextEditorWithPreview.Layout.SHOW_EDITOR_AND_PREVIEW else TextEditorWithPreview.Layout.SHOW_EDITOR), TextEditor {
     companion object {
         fun create(project: com.intellij.openapi.project.Project, file: VirtualFile): KotlinKorgeFileEditorWithPreview {
             val textEditorProvider = TextEditorProvider.getInstance()

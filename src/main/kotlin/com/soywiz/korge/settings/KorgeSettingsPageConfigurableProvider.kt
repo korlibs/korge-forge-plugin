@@ -43,6 +43,14 @@ class KorgeSettingsPageConfigurableProvider : ConfigurableProvider() {
                             })
                             .comment("Uses http://127.0.0.1:4000/ instead of https://store.korge.org/ for development purposes")
                     }
+                    row {
+                        checkBox("KorGE Preview Split by Default")
+                            .bindSelected({ korgeGlobalSettings.korgeSplitWindowByDefault }, {
+                                korgeGlobalSettings.korgeSplitWindowByDefault = it
+                                println("korgeGlobalSettings.korgeSplitWindowByDefault = $it : ${korgeGlobalSettings.korgeSplitWindowByDefault}")
+                            })
+                            .comment("Starts with the KorGE Preview opened by default")
+                    }
                 }
             }
 

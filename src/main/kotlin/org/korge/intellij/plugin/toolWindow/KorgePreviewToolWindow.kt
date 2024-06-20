@@ -4,11 +4,9 @@ import androidx.compose.runtime.*
 import com.intellij.execution.*
 import com.intellij.execution.actions.*
 import com.intellij.execution.executors.*
-import com.intellij.execution.ui.*
 import com.intellij.icons.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.application.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.wm.*
 import com.intellij.ui.*
@@ -128,6 +126,8 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
 
     var checkProcessTimer = Stopwatch().start()
     fun doRenderLoop(): AutoCloseable {
+        sendEv(IPCEvent.RESIZE, width, height)
+
         var running = true
         fun func() {
             if (!running) return
