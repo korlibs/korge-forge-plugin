@@ -31,6 +31,5 @@ class KorgeStoreAction : KorgeAction(), DumbAware {
 
 val STORE_PREFIX get() = when {
     korgeGlobalSettings.useLocalStore -> "http://127.0.0.1:4000"
-    //else -> "https://store.korge.org"
-    else -> "https://show.korge.org/#BunnymarkScene"
+    else -> "https://store.korge.org"
 }

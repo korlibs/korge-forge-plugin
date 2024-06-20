@@ -74,7 +74,14 @@ class NewKorgeModuleWizardStep(
     }
 
     fun parseTemplates(json: String): List<KorgeTemplate> {
-        return jacksonObjectMapper.readValue<List<KorgeTemplate>>(json)
+        try {
+            return jacksonObjectMapper.readValue<List<KorgeTemplate>>(json)
+        } catch (e: Throwable) {
+            println("!!! JSON: $TEMPLATES_URL")
+            println(json)
+            e.printStackTrace()
+            return jacksonObjectMapper.readValue<List<KorgeTemplate>>(TEMPLATES_DEFAULT_CONTENT)
+        }
     }
 
     fun createTemplateRows(list: List<KorgeTemplate>): List<KorgeTemplateRow> {
