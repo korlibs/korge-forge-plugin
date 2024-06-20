@@ -3,24 +3,22 @@ package org.korge.intellij.plugin.toolWindow
 import androidx.compose.runtime.*
 import com.intellij.execution.*
 import com.intellij.execution.actions.*
-import com.intellij.execution.configurations.*
-import com.intellij.execution.executors.DefaultRunExecutor
+import com.intellij.execution.executors.*
+import com.intellij.execution.ui.*
 import com.intellij.icons.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.application.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.wm.*
 import com.intellij.ui.*
 import com.intellij.ui.content.*
 import com.intellij.util.ui.*
-import com.soywiz.korge.intellij.*
 import com.soywiz.korge.intellij.util.*
 import korge.composable.*
 import korlibs.io.lang.*
 import korlibs.korge.ipc.*
 import korlibs.time.*
-import org.jetbrains.kotlin.tools.projectWizard.core.service.*
-import org.jetbrains.plugins.gradle.service.execution.*
 import java.awt.*
 import java.awt.event.*
 import java.awt.image.*
@@ -47,6 +45,12 @@ class KorgePreviewPlayAction(val ipc: KorgeIPC? = null, val panel: KorgeIPCJPane
 class KorgePreviewStopAction : KorgeAction("Stop", "Stop", AllIcons.Actions.Suspend) {
     override fun actionPerformed(e: AnActionEvent) {
         KorgePreviewTool.stop(e)
+        //ProcessHandle.of(0L)
+        //processHandler.destroyProcess();
+        //val application =
+        //ApplicationManager.getApplication().getService<InstantShutdown>(InstantShutdown::class.java).computeWithDisabledInstantShutdown<Boolean> {
+        //    return true
+        //}
     }
 }
 
@@ -128,20 +132,21 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
         fun func() {
             if (!running) return
             if (checkProcessTimer.elapsed >= 0.25.seconds) {
+                checkProcessTimer.restart()
                 if (lastFrame != null) {
                     if (ProcessHandle.of(lastFrame!!.pid.toLong()).getOrNull()?.isAlive != true) {
                         ipc.setFrame(IPCFrame(-1, 0, 0, IntArray(0)))
+                        lastFrame = null
                         image = null
                     }
                 }
-
-                checkProcessTimer.restart()
             }
             try {
                 readFrame()
             } catch (e: Throwable) {
                 e.printStackTrace()
             }
+            Thread.sleep(1L)
             SwingUtilities.invokeLater(::func)
         }
         func()
@@ -171,6 +176,7 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
             g.color = JBColor.PanelBackground
             g.fillRect(0, 0, width, height)
             g.color = JBColor.foreground()
+            g.font = JBUI.Fonts.label()
             g.drawString("Not running yet... Press the play icon to start", 25, 25)
         }
     }
@@ -272,6 +278,7 @@ class KorgeIPCJPanel(val ipc: KorgeIPC = KorgeIPC()) : JButton(), MouseListener,
     override fun focusGained(e: FocusEvent) = Unit
     override fun focusLost(e: FocusEvent) = Unit
     override fun dispose() {
+        println("DISPOSE!!")
         renderLoop?.close()
         renderLoop = null
     }
