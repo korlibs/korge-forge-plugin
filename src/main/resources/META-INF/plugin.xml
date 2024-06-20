@@ -5,7 +5,7 @@
     <id>com.soywiz.korge.korge-intellij-plugin</id>
 
     <name>Korge</name>
-    <version>6.1.0</version>
+    <version>6.1.1</version>
     <vendor email="korge.game.engine@gmail.com" url="https://korge.org/">KorGE</vendor>
 
     <description><![CDATA[
@@ -13,9 +13,11 @@
 	]]></description>
 
     <change-notes><!-- language: HTML --><![CDATA[
-        <h3>6.1.0</h3>
+        <h3>6.1.1</h3>
         <ul>
             <li>Supports previewing the game inside the IDE</li>
+            <li>Detect updates</li>
+            <li>Fixes new project template</li>
         </ul>
         <h3>6.0.0</h3>
         <ul>
