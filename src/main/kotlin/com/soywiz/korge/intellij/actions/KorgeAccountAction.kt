@@ -15,7 +15,7 @@ import java.awt.AWTEvent
 import java.awt.event.*
 import javax.swing.*
 
-class KorgeAccountAction : KorgeAction(), DumbAware {
+class KorgeAccountAction : KorgeAction(updateThread = ActionUpdateThread.BGT), DumbAware {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project
         //val menu = JBPopupMenu()

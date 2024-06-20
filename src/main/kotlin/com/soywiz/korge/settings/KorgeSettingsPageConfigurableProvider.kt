@@ -1,24 +1,10 @@
 package com.soywiz.korge.settings
 
-import com.intellij.openapi.options.BoundSearchableConfigurable
-import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.options.ConfigurableProvider
-import com.intellij.openapi.options.SearchableConfigurable
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.dsl.builder.bindSelected
-import com.intellij.ui.dsl.builder.panel
-import com.soywiz.korge.intellij.config.KorgeGlobalSettings
-import com.soywiz.korge.intellij.config.korgeGlobalSettings
-import org.jetbrains.annotations.Nls
-import java.awt.BorderLayout
-import java.awt.FlowLayout
-import java.awt.LayoutManager
-import javax.swing.BoxLayout
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.JPanel
+import com.intellij.openapi.options.*
+import com.intellij.openapi.ui.*
+import com.intellij.ui.dsl.builder.*
+import com.soywiz.korge.intellij.config.*
+import org.jetbrains.annotations.*
 
 // Used as reference:
 //   com.intellij.ui.ExperimentalUIConfigurable
@@ -43,14 +29,14 @@ class KorgeSettingsPageConfigurableProvider : ConfigurableProvider() {
                             })
                             .comment("Uses http://127.0.0.1:4000/ instead of https://store.korge.org/ for development purposes")
                     }
-                    row {
-                        checkBox("KorGE Preview Split by Default")
-                            .bindSelected({ korgeGlobalSettings.korgeSplitWindowByDefault }, {
-                                korgeGlobalSettings.korgeSplitWindowByDefault = it
-                                println("korgeGlobalSettings.korgeSplitWindowByDefault = $it : ${korgeGlobalSettings.korgeSplitWindowByDefault}")
-                            })
-                            .comment("Starts with the KorGE Preview opened by default")
-                    }
+                    //row {
+                    //    checkBox("KorGE Preview Split by Default")
+                    //        .bindSelected({ korgeGlobalSettings.korgeSplitWindowByDefault }, {
+                    //            korgeGlobalSettings.korgeSplitWindowByDefault = it
+                    //            println("korgeGlobalSettings.korgeSplitWindowByDefault = $it : ${korgeGlobalSettings.korgeSplitWindowByDefault}")
+                    //        })
+                    //        .comment("Starts with the KorGE Preview opened by default")
+                    //}
                 }
             }
 

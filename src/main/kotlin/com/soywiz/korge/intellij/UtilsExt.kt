@@ -14,8 +14,10 @@ import com.intellij.openapi.roots.*
 import com.intellij.openapi.roots.libraries.*
 import com.intellij.openapi.util.*
 import com.intellij.util.*
+import korlibs.time.*
 import java.awt.*
 import java.util.concurrent.*
+import javax.swing.*
 
 fun <T> runReadAction(callback: () -> T): T {
 	return ApplicationManager.getApplication().runReadAction(Computable {
@@ -104,4 +106,18 @@ fun CompletionProvider(callback: (
 	) {
 		callback(parameters, context, result)
 	}
+}
+
+fun invokeLater(block: () -> Unit) {
+    SwingUtilities.invokeLater(block)
+}
+
+fun invokeLater(time: kotlin.time.Duration, block: () -> Unit) {
+    Timer(time.millisecondsInt) {
+        //SwingUtilities.invokeLater(block)
+        block()
+    }.also {
+        it.isRepeats = false
+        it.start()
+    }
 }

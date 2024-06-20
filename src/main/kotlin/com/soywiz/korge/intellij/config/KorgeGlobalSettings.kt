@@ -21,6 +21,7 @@ open class KorgeGlobalSettings : PersistentStateComponent<KorgeGlobalSettings>, 
 	var cachedTemplateString: String? = null
     var useLocalStore: Boolean = false
     var korgeSplitWindowByDefault: Boolean = true
+    var forgeUpdateLastChecked: Long = 0L
 
 	init {
 		//println("KorgeGlobalSettings.init")

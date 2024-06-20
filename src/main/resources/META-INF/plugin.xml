@@ -49,6 +49,8 @@
     -->
 
     <actions>
+        <action id="KorgeCheckForUpdates" class="com.soywiz.korge.intellij.actions.KorgeCheckForUpdates"
+        />
         <action id="KorgeCreateGradleRunConfiguration"
                 class="com.soywiz.korge.intellij.actions.KorgeCreateGradleRunConfiguration" text="_KorgeCreateGradleRunConfiguration"
                 />
@@ -168,14 +170,15 @@
         <toolWindow id="Korge Resources" anchor="right" icon="AllIcons.Nodes.ResourceBundle"
                     factoryClass="org.korge.intellij.plugin.toolWindow.KorgeResourceToolWindow" secondary="true" />
 
-        <!--
         <toolWindow id="Korge Preview" anchor="right" icon="AllIcons.Actions.ToggleVisibility"
                     factoryClass="org.korge.intellij.plugin.toolWindow.KorgePreviewToolWindow" secondary="true" />
+        <!--
+        <fileEditorProvider id="KotlinKorgeWithPreviewFileEditorProvider" implementation="com.soywiz.korge.intellij.actions.KotlinKorgeWithPreviewFileEditorProvider"/>
         -->
+
 
         <fileEditorProvider
             implementation="com.soywiz.korge.intellij.actions.KorgeWebPreviewEditorProvider"/>
-        <fileEditorProvider id="KotlinKorgeWithPreviewFileEditorProvider" implementation="com.soywiz.korge.intellij.actions.KotlinKorgeWithPreviewFileEditorProvider"/>
 
         <applicationConfigurable
             groupId="language"

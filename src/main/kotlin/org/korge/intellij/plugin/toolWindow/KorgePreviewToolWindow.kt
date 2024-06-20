@@ -4,6 +4,9 @@ import androidx.compose.runtime.*
 import com.intellij.execution.*
 import com.intellij.execution.actions.*
 import com.intellij.execution.executors.*
+import com.intellij.execution.impl.*
+import com.intellij.execution.runners.*
+import com.intellij.execution.ui.*
 import com.intellij.icons.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
@@ -68,6 +71,8 @@ object KorgePreviewTool {
         ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
         panel?.requestFocusInWindow()
 
+        DefaultRunExecutor.getRunExecutorInstance()
+
         //// Find a specific run configuration by name
         //val configurationName = "YourConfigurationName"
         //val settings: RunnerAndConfigurationSettings? = runManager.allSettings.find { it.name == configurationName }
@@ -79,7 +84,39 @@ object KorgePreviewTool {
         //}
     }
     fun stop(e: AnActionEvent) {
-        StopAction().actionPerformed(e)
+        val project: Project = e.project ?: return
+
+        val descriptors = getStoppableDescriptors(project)
+        for (desc in descriptors) {
+            //desc.second.
+        }
+
+        val manager = ExecutionManager.getInstance(project) as ExecutionManagerImpl
+
+        fun retry(retryN: Int = 0) {
+            StopAction().actionPerformed(e)
+
+            //val runContentManager = RunContentManager.getInstance(project)
+            val processes = manager.getRunningProcesses().toList()
+            println("DESTROYING: processes=$processes")
+            for (process in processes) {
+                process.isProcessTerminated
+                process.destroyProcess()
+                if (retryN >= 2) {
+                    (process as? KillableProcess)?.killProcess()
+                }
+                //process.waitFor()
+            }
+            println("  --> $processes")
+
+            if (processes.isNotEmpty() && processes.any { !it.isProcessTerminated }) {
+                com.soywiz.korge.intellij.invokeLater(1.seconds) {
+                    retry(retryN + 1)
+                }
+            }
+        }
+
+        retry()
     }
 }
 
