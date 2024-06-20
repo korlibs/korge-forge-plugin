@@ -35,7 +35,7 @@ open class KorgeStartUpdater : KorgeAction("Start KorGE Forge Updater", icon = A
                     runBlocking { downloadFile(URL("https://forge.korge.org/install-korge-forge.sh"), localFileInstaller) }
                     localFileInstaller.toPath().setPosixFilePermissions(setOf(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.OTHERS_EXECUTE))
                     println("KorgeStartUpdater[2]")
-                    ProcessBuilder("cmd", "/c", "start", "cmd", "/c", localFileInstaller.absolutePath).directory(localFileInstaller.parentFile).start()
+                    ProcessBuilder("sh", localFileInstaller.absolutePath).directory(localFileInstaller.parentFile).start()
                 }
             }
             println("KorgeStartUpdater[3]")
