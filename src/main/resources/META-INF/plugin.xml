@@ -170,11 +170,11 @@
         <toolWindow id="Korge Resources" anchor="right" icon="AllIcons.Nodes.ResourceBundle"
                     factoryClass="org.korge.intellij.plugin.toolWindow.KorgeResourceToolWindow" secondary="true" />
 
+        <!--
         <toolWindow id="Korge Preview" anchor="right" icon="AllIcons.Actions.ToggleVisibility"
                     factoryClass="org.korge.intellij.plugin.toolWindow.KorgePreviewToolWindow" secondary="true" />
-        <!--
-        <fileEditorProvider id="KotlinKorgeWithPreviewFileEditorProvider" implementation="com.soywiz.korge.intellij.actions.KotlinKorgeWithPreviewFileEditorProvider"/>
         -->
+        <fileEditorProvider id="KotlinKorgeWithPreviewFileEditorProvider" implementation="com.soywiz.korge.intellij.actions.KotlinKorgeWithPreviewFileEditorProvider"/>
 
 
         <fileEditorProvider

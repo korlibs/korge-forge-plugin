@@ -20,7 +20,7 @@ open class KorgeGlobalSettings : PersistentStateComponent<KorgeGlobalSettings>, 
 	var cachedTemplateLastRefreshTime: Long = 0L
 	var cachedTemplateString: String? = null
     var useLocalStore: Boolean = false
-    var korgeSplitWindowByDefault: Boolean = true
+    var korgeSplitWindowByDefault: Boolean = false
     var forgeUpdateLastChecked: Long = 0L
 
 	init {
