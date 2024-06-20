@@ -4,6 +4,7 @@ plugins {
     java
     idea
     id("org.jetbrains.intellij") version "1.17.3"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     kotlin("jvm") version "2.0.0"
     kotlin("plugin.compose") version "2.0.0"
 }
@@ -101,10 +102,24 @@ tasks {
         //dependsOn(":korge-next:publishJvmPublicationToMavenLocal")
     }
 
-    val extractPluginJars by creating(Sync::class) {
+    val extractPluginJarsBase by creating(Sync::class) {
         dependsOn(buildPlugin)
         from(zipTree(File(rootDir, "build/distributions/KorgePlugin.zip")))
-        into(File(rootDir, "build/distributions/KorgePlugin"))
+        into(File(rootDir, "build/distributions/_KorgePlugin"))
+    }
+
+    val extractPluginJars by creating(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
+        dependsOn(extractPluginJarsBase)
+        from(File(projectDir, "build/distributions/_KorgePlugin/KorgePlugin/lib").absolutePath)
+        archiveBaseName.set("korge-forge-plugin.jar")
+        destinationDirectory.set(File(projectDir, "build/distributions/KorgePlugin/KorgePlugin/lib"))
+    }
+
+    val mergedPlugin by creating(Zip::class) {
+        dependsOn(extractPluginJars)
+        from(File(projectDir, "build/distributions/KorgePlugin").absolutePath)
+        archiveBaseName.set("MergedKorgePlugin")
+        destinationDirectory.set(File(projectDir, "build/distributions"))
     }
 
 //    val runDebugTilemap by creating(JavaExec::class) {
