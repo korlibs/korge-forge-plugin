@@ -5,7 +5,7 @@
     <id>com.soywiz.korge.korge-intellij-plugin</id>
 
     <name>Korge</name>
-    <version>6.1.2</version>
+    <version>6.1.3</version>
     <vendor email="korge.game.engine@gmail.com" url="https://korge.org/">KorGE</vendor>
 
     <description><![CDATA[
@@ -13,6 +13,10 @@
 	]]></description>
 
     <change-notes><!-- language: HTML --><![CDATA[
+        <h3>6.1.3</h3>
+        <ul>
+            <li>Fixes frame buffer when /tmp folder doesn't exists on windows</li>
+        </ul>
         <h3>6.1.2</h3>
         <ul>
             <li>Improve IDE Stability</li>
