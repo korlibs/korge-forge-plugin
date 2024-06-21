@@ -5,19 +5,24 @@ import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.util.*
 import com.intellij.util.ui.*
 import korlibs.korge.ipc.*
+import org.korge.intellij.plugin.ipcpreview.*
 import java.beans.*
 import javax.swing.*
 
 class GamePreviewFileEditor(val project: com.intellij.openapi.project.Project) : UserDataHolderBase(), FileEditor {
-    val ipc = KorgeIPC().also {
-        it.writeEvent(korlibs.korge.ipc.IPCEvent(type = korlibs.korge.ipc.IPCEvent.BRING_BACK))
-    }
-    val panel by lazy { KorgeIPCJPanel(ipc) }
+
+    //val ipc = KorgeIPC().also {
+    //    it.writeEvent(korlibs.korge.ipc.IPCEvent(type = korlibs.korge.ipc.IPCEvent.BRING_BACK))
+    //}
+    val ipcInfo = KorgeIPCInfo()
+    val panel by lazy { KorgeForgeIPCJPanel(ipcInfo) }
     val toolBar by lazy {
         ActionManager.getInstance().createActionToolbar(ActionPlaces.TEXT_EDITOR_WITH_PREVIEW, DefaultActionGroup().also {
-            it.add(KorgePreviewPlayAction(ipc))
+            it.add(KorgePreviewPlayAction(ipcInfo))
             it.add(KorgePreviewStopAction())
-        }, true)
+        }, true).also {
+            it.targetComponent = panel
+        }
     }
     //val toolBar = EditorHeaderComponent().also {
     //    val actionGroup: ActionGroup = createLeftToolbarActionGroup()
@@ -42,8 +47,6 @@ class GamePreviewFileEditor(val project: com.intellij.openapi.project.Project) :
     override fun dispose() {
         //JBToolBar
         panel.dispose()
-        ipc.frame.close()
-        ipc.events.close()
     }
     override fun getComponent(): JComponent = full
     override fun getPreferredFocusedComponent(): JComponent? = panel
