@@ -1,4 +1,6 @@
 import org.jetbrains.intellij.tasks.*
+import org.jetbrains.kotlin.gradle.targets.js.*
+import java.security.MessageDigest
 
 plugins {
     java
@@ -120,6 +122,25 @@ tasks {
         from(File(projectDir, "build/distributions/KorgePlugin").absolutePath)
         archiveBaseName.set("MergedKorgePlugin")
         destinationDirectory.set(File(projectDir, "build/distributions"))
+    }
+
+    val doForgeRelease by creating(Task::class) {
+        dependsOn(extractPluginJars)
+        doLast {
+            val pluginXmlFile = file("src/main/resources/META-INF/plugin.xml")
+            val pluginVersion = Regex("<version>(.*?)</version>").find(pluginXmlFile.readText())?.groupValues?.get(1) ?: error("Can't find <version> in plugin.xml")
+
+            val jarFile = file("build/distributions/KorgePlugin/KorgePlugin/lib/korge-forge-plugin.jar.jar")
+
+            file("build/korge-forge-plugin-$pluginVersion.jar.sha1").writeText(MessageDigest.getInstance("SHA1").digest(jarFile.readBytes()).toHex().lowercase())
+            file("build/korge-forge-plugin-$pluginVersion.jar.sha256").writeText(MessageDigest.getInstance("SHA256").digest(jarFile.readBytes()).toHex().lowercase())
+
+            copy {
+                from(jarFile)
+                into("build")
+                rename { "korge-forge-plugin-$pluginVersion.jar" }
+            }
+        }
     }
 
 //    val runDebugTilemap by creating(JavaExec::class) {
