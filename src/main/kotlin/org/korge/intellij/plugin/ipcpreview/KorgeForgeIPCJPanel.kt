@@ -11,6 +11,8 @@ import java.awt.image.*
 import javax.swing.*
 import kotlin.jvm.optionals.*
 
+// taskkill /F /IM java.exe /T
+
 // With JPanel isFocusable doesn't work as expected
 class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.PROCESS_PATH)) : JButton(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener, ComponentListener, Disposable {
     var lastFrame: IPCFrame? = null
@@ -67,7 +69,7 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.
         if ((e.changeFlags and HierarchyEvent.SHOWING_CHANGED.toLong()) != 0L) {
             if (isShowing) {
                 if (ipc == null) {
-                    ipc = ipcInfo.createIPC()
+                    ipc = ipcInfo.createIPC(isServer = false)
                     ipc?.onConnect = {
                         it.writePacket(IPCPacket(type = IPCPacket.BRING_BACK))
                         it.writePacket(IPCPacket.resizePacket(IPCPacket.RESIZE, maxOf(width, 32), maxOf(height, 32)))
@@ -148,14 +150,21 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.
         //val ratio = 1.0 / devicePixelRatio
         val ratio = JBUI.pixScale().toDouble()
         //println("ratio=$ratio, jb=${JBUI.pixScale().toDouble()}")
-        sendEv(IPCPacket.mousePacket(type, (e.x * ratio).toInt(), (e.y * ratio).toInt(), e.button))
+        //sendEv(IPCPacket.mousePacket(type, (e.x * ratio).toInt(), (e.y * ratio).toInt(), e.button))
+        val we = e as? MouseWheelEvent?
+        val wheel = (we?.preciseWheelRotation ?: 0.0).toFloat()
+
+        val wx = if (e.isShiftDown) wheel else 0f
+        val wy = if (e.isShiftDown) 0f else wheel
+        val wz = 0f
+        sendEv(IPCPacket.mousePacket(type, e.x, e.y, e.button, wx, wy, wz))
     }
     override fun keyTyped(e: KeyEvent) = sendEv(IPCPacket.KEY_TYPE, e)
     override fun keyPressed(e: KeyEvent) = sendEv(IPCPacket.KEY_DOWN, e)
     override fun keyReleased(e: KeyEvent) = sendEv(IPCPacket.KEY_UP, e)
     override fun mouseMoved(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
     override fun mouseDragged(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
-    override fun mouseWheelMoved(e: MouseWheelEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
+    override fun mouseWheelMoved(e: MouseWheelEvent) = sendEv(IPCPacket.MOUSE_SCROLL, e)
     override fun mouseExited(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
     override fun mouseEntered(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
     override fun mouseReleased(e: MouseEvent) = sendEv(IPCPacket.MOUSE_UP, e)

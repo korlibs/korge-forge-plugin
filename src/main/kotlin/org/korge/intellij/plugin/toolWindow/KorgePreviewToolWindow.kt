@@ -67,8 +67,8 @@ object KorgePreviewTool {
         //GradleRunConfiguration(project, null, "runJvmAutoreload")
         val ipcPath = ipc?.path ?: KorgeIPCInfo.DEFAULT_PATH
         //val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview) $ipcPath", select = false) {
-        //val settings = createGradleRunConfiguration(project, "runJvmAutoreload -Pkorge.headless=true \"-Pkorge.ipc=${ipcPath}\"", name = "run (preview)", select = false) {
-        val settings = createGradleRunConfiguration(project, "runJvmAutoreload \"-Pkorge.ipc=${ipcPath}\"", name = "run (preview)", select = false) {
+        val settings = createGradleRunConfiguration(project, "runJvmAutoreload -Pkorge.headless=true \"-Pkorge.ipc=${ipcPath}\"", name = "run (preview)", select = false) {
+        //val settings = createGradleRunConfiguration(project, "runJvmAutoreload \"-Pkorge.ipc=${ipcPath}\"", name = "run (preview)", select = false) {
         //val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview)", select = false) {
             it.settings.env.remove("KORGE_IPC")
             it.settings.env.remove("KORGE_HEADLESS")
