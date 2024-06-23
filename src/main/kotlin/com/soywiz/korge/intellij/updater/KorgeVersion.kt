@@ -36,7 +36,7 @@ suspend fun korgeForgeVersionJson(telemetry: Boolean = false): String {
         val DEFAULT_JSON = "{\"forge.plugin.version\": \"${KORGE_FORGE_VERSION}\", \"installer.version\": \"0.0.0\"}"
         korgeCacheData.getOrPut("korgeVersionJson") {
             val versionForgeJsonFile = File(korgeCacheDir, "version.forge.json")
-            if (!versionForgeJsonFile.isFile && System.currentTimeMillis() - versionForgeJsonFile.lastModified() >= 24 * 3600 * 1000L) {
+            if (!versionForgeJsonFile.isFile || System.currentTimeMillis() - versionForgeJsonFile.lastModified() >= 24 * 3600 * 1000L) {
                 val base = "https://version.korge.org/version.json?source=ide&type=forge"
                 val basicProps: Map<String, String> = mapOf(
                     //"version" to BuildVersions.KORGE,
@@ -67,7 +67,8 @@ suspend fun korgeForgeVersionJson(telemetry: Boolean = false): String {
                         readTimeout = 3_000,
                     )
                 } catch (e: Throwable) {
-                    e.stackTraceToString()
+                    //e.stackTraceToString()
+                    e.printStackTrace()
                     versionForgeJsonFile.writeText(DEFAULT_JSON)
                 }
             }
