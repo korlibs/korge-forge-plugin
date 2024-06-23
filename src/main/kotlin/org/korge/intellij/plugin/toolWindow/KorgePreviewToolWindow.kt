@@ -5,11 +5,13 @@ import com.intellij.execution.*
 import com.intellij.execution.actions.*
 import com.intellij.execution.executors.*
 import com.intellij.execution.impl.*
+import com.intellij.execution.process.*
 import com.intellij.execution.runners.*
 import com.intellij.execution.ui.*
 import com.intellij.icons.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.externalSystem.service.execution.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.wm.*
 import com.intellij.ui.*
@@ -27,16 +29,16 @@ import java.awt.image.*
 import javax.swing.*
 import kotlin.jvm.optionals.*
 
-@Composable
-fun MyFunc() {
-    var n by state(0)
-    Button("hello $n") {
-        n++
-    }
-    Button("world $n") {
-        n = 20
-    }
-}
+//@Composable
+//fun MyFunc() {
+//    var n by state(0)
+//    Button("hello $n") {
+//        n++
+//    }
+//    Button("world $n") {
+//        n = 20
+//    }
+//}
 
 class KorgePreviewPlayAction(val ipc: KorgeIPCInfo? = null, val panel: KorgeForgeIPCJPanel? = null) : KorgeAction("Play", "Play", AllIcons.Actions.Execute) {
     override fun actionPerformed(e: AnActionEvent) {
@@ -63,8 +65,14 @@ object KorgePreviewTool {
         //RunAction
         //RunContextAction(DefaultRunExecutor()).actionPerformed(e)
         //GradleRunConfiguration(project, null, "runJvmAutoreload")
-        val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview)", select = false) {
-            it.settings.env["KORGE_IPC"] = ipc?.path ?: KorgeIPCInfo.DEFAULT_PATH
+        val ipcPath = ipc?.path ?: KorgeIPCInfo.DEFAULT_PATH
+        //val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview) $ipcPath", select = false) {
+        val settings = createGradleRunConfiguration(project, "runJvmAutoreload -Pkorge.headless=true \"-Pkorge.ipc=${ipcPath}\"", name = "run (preview)", select = false) {
+        //val settings = createGradleRunConfiguration(project, "runJvmAutoreload", name = "run (preview)", select = false) {
+            it.settings.env.remove("KORGE_IPC")
+            it.settings.env.remove("KORGE_HEADLESS")
+            //it.settings.env["KORGE_IPC"] = ipcPath
+            //it.settings.env["KORGE_HEADLESS"] = "true"
         }
         //set.
 
@@ -98,19 +106,21 @@ object KorgePreviewTool {
             StopAction().actionPerformed(e)
 
             //val runContentManager = RunContentManager.getInstance(project)
-            val processes = manager.getRunningProcesses().toList()
+            val processes: List<ProcessHandler> = manager.getRunningProcesses().toList()
             println("DESTROYING: processes=$processes")
             for (process in processes) {
                 process.isProcessTerminated
                 process.destroyProcess()
                 if (retryN >= 2) {
                     (process as? KillableProcess)?.killProcess()
+                    (process as? ExternalSystemProcessHandler)?.task?.cancel()
+                    println("!!!!!!!!!!!!!! ${process::class} $process ${process is KillableProcess}")
                 }
                 //process.waitFor()
             }
             println("  --> $processes")
 
-            if (processes.isNotEmpty() && processes.any { !it.isProcessTerminated }) {
+            if (processes.isNotEmpty() && processes.any { !it.isProcessTerminated } && retryN < 4) {
                 com.soywiz.korge.intellij.invokeLater(1.seconds) {
                     retry(retryN + 1)
                 }
@@ -128,8 +138,8 @@ class KorgePreviewToolWindow : ToolWindowFactory {
         //    MyFunc()
         //}
 
-        val ipcInfo = KorgeIPCInfo()
-        val panel = KorgeForgeIPCJPanel(KorgeIPCInfo())
+        val ipcInfo = KorgeIPCInfo(KorgeIPCInfo.PROCESS_PATH)
+        val panel = KorgeForgeIPCJPanel(ipcInfo)
 
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
         toolWindow.setTitleActions(listOf(

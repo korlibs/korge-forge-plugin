@@ -14,7 +14,7 @@ class GamePreviewFileEditor(val project: com.intellij.openapi.project.Project) :
     //val ipc = KorgeIPC().also {
     //    it.writeEvent(korlibs.korge.ipc.IPCEvent(type = korlibs.korge.ipc.IPCEvent.BRING_BACK))
     //}
-    val ipcInfo = KorgeIPCInfo()
+    val ipcInfo = KorgeIPCInfo(KorgeIPCInfo.PROCESS_PATH)
     val panel by lazy { KorgeForgeIPCJPanel(ipcInfo) }
     val toolBar by lazy {
         ActionManager.getInstance().createActionToolbar(ActionPlaces.TEXT_EDITOR_WITH_PREVIEW, DefaultActionGroup().also {

@@ -12,7 +12,7 @@ import javax.swing.*
 import kotlin.jvm.optionals.*
 
 // With JPanel isFocusable doesn't work as expected
-class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo()) : JButton(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener, ComponentListener, Disposable {
+class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.PROCESS_PATH)) : JButton(), MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, HierarchyListener, FocusListener, ComponentListener, Disposable {
     var lastFrame: IPCFrame? = null
     var image: BufferedImage? = null
     var currentFrameId = -1
@@ -32,8 +32,6 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo()) : JButton(
     var ipc: KorgeIPC? = null
     var checkProcessTimer = Stopwatch().start()
     fun doRenderLoop(): AutoCloseable {
-        sendEv(IPCEvent.RESIZE, width, height)
-
         val timer = Timer(1000 / 100) {
             try {
                 if (checkProcessTimer.elapsed >= 0.25.seconds) {
@@ -70,11 +68,11 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo()) : JButton(
             if (isShowing) {
                 if (ipc == null) {
                     ipc = ipcInfo.createIPC()
-                    ipc?.resetEvents()
-                    repeat(2) { ipc?.writeEvent(IPCEvent(type = IPCEvent.BRING_BACK)) }
+                    ipc?.onConnect = {
+                        it.writePacket(IPCPacket(type = IPCPacket.BRING_BACK))
+                        it.writePacket(IPCPacket.resizePacket(IPCPacket.RESIZE, maxOf(width, 32), maxOf(height, 32)))
+                    }
                 }
-
-                sendEv(IPCEvent.BRING_BACK)
                 renderLoop?.close()
                 renderLoop = doRenderLoop()
             } else {
@@ -142,59 +140,43 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo()) : JButton(
     //    }
     //}
 
-    private fun sendEv(type: Int, p0: Int = 0, p1: Int = 0, p2: Int = 0, p3: Int = 0) {
-        ipc?.writeEvent(IPCEvent(type = type, p0 = p0, p1 = p1, p2 = p2, p3 = p3))
+    private fun sendEv(packet: IPCPacket) {
+        ipc?.writeEvent(packet)
     }
-    private fun sendEv(type: Int, e: KeyEvent) = sendEv(type = type, p0 = e.keyCode, p1 = e.keyChar.code)
+    private fun sendEv(type: Int, e: KeyEvent) = sendEv(IPCPacket.keyPacket(type, e.keyCode, e.keyChar.code))
     private fun sendEv(type: Int, e: MouseEvent) {
         //val ratio = 1.0 / devicePixelRatio
         val ratio = JBUI.pixScale().toDouble()
         //println("ratio=$ratio, jb=${JBUI.pixScale().toDouble()}")
-        sendEv(type = type, p0 = (e.x * ratio).toInt(), p1 = (e.y * ratio).toInt(), p2 = e.button)
+        sendEv(IPCPacket.mousePacket(type, (e.x * ratio).toInt(), (e.y * ratio).toInt(), e.button))
     }
-    override fun keyTyped(e: KeyEvent) = sendEv(IPCEvent.KEY_TYPE, e)
-    override fun keyPressed(e: KeyEvent) = sendEv(IPCEvent.KEY_DOWN, e)
-    override fun keyReleased(e: KeyEvent) = sendEv(IPCEvent.KEY_UP, e)
-    override fun mouseMoved(e: MouseEvent) = sendEv(IPCEvent.MOUSE_MOVE, e)
-    override fun mouseDragged(e: MouseEvent) = sendEv(IPCEvent.MOUSE_MOVE, e)
-    override fun mouseWheelMoved(e: MouseWheelEvent) = sendEv(IPCEvent.MOUSE_MOVE, e)
-    override fun mouseExited(e: MouseEvent) = sendEv(IPCEvent.MOUSE_MOVE, e)
-    override fun mouseEntered(e: MouseEvent) = sendEv(IPCEvent.MOUSE_MOVE, e)
-    override fun mouseReleased(e: MouseEvent) = sendEv(IPCEvent.MOUSE_UP, e)
+    override fun keyTyped(e: KeyEvent) = sendEv(IPCPacket.KEY_TYPE, e)
+    override fun keyPressed(e: KeyEvent) = sendEv(IPCPacket.KEY_DOWN, e)
+    override fun keyReleased(e: KeyEvent) = sendEv(IPCPacket.KEY_UP, e)
+    override fun mouseMoved(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
+    override fun mouseDragged(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
+    override fun mouseWheelMoved(e: MouseWheelEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
+    override fun mouseExited(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
+    override fun mouseEntered(e: MouseEvent) = sendEv(IPCPacket.MOUSE_MOVE, e)
+    override fun mouseReleased(e: MouseEvent) = sendEv(IPCPacket.MOUSE_UP, e)
     override fun mousePressed(e: MouseEvent) {
         requestFocusInWindow()
-        sendEv(IPCEvent.MOUSE_DOWN, e)
+        sendEv(IPCPacket.MOUSE_DOWN, e)
     }
     override fun mouseClicked(e: MouseEvent) {
         requestFocusInWindow()
-        sendEv(IPCEvent.MOUSE_CLICK, e)
+        sendEv(IPCPacket.MOUSE_CLICK, e)
     }
 
     override fun componentResized(e: ComponentEvent) {
         //println("componentResized: width=$width, height=$height")
-        sendEv(IPCEvent.RESIZE, e.component.width, e.component.height)
+        sendEv(IPCPacket.resizePacket(IPCPacket.RESIZE, maxOf(e.component.width, 32), maxOf(e.component.height, 32)))
     }
     override fun componentMoved(e: ComponentEvent) {
     }
     override fun componentShown(e: ComponentEvent) {
     }
     override fun componentHidden(e: ComponentEvent) {
-    }
-    companion object {
-        @JvmStatic
-        fun main() {
-            val frame = JFrame()
-            val frameHolder = korlibs.korge.ipc.KorgeIPCJPanel()
-            frame.add(frameHolder)
-            frame.addKeyListener(frameHolder)
-
-            frame.preferredSize = Dimension(640, 480)
-            frame.pack()
-            frame.setLocationRelativeTo(null)
-
-            frame.isVisible = true
-
-        }
     }
 
     override fun focusGained(e: FocusEvent) = Unit
