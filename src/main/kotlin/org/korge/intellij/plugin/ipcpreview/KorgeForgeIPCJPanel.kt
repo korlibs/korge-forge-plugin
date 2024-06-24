@@ -72,7 +72,7 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.
                     ipc = ipcInfo.createIPC(isServer = false)
                     ipc?.onConnect = {
                         it.writePacket(IPCPacket(type = IPCPacket.BRING_BACK))
-                        it.writePacket(IPCPacket.resizePacket(IPCPacket.RESIZE, maxOf(width, 32), maxOf(height, 32)))
+                        updateSize()
                     }
                 }
                 renderLoop?.close()
@@ -157,7 +157,9 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.
         val wx = if (e.isShiftDown) wheel else 0f
         val wy = if (e.isShiftDown) 0f else wheel
         val wz = 0f
-        sendEv(IPCPacket.mousePacket(type, e.x, e.y, e.button, wx, wy, wz))
+        val x = (e.x * ratio).toInt()
+        val y = (e.y * ratio).toInt()
+        sendEv(IPCPacket.mousePacket(type, x, y, e.button, wx, wy, wz))
     }
     override fun keyTyped(e: KeyEvent) = sendEv(IPCPacket.KEY_TYPE, e)
     override fun keyPressed(e: KeyEvent) = sendEv(IPCPacket.KEY_DOWN, e)
@@ -177,9 +179,13 @@ class KorgeForgeIPCJPanel(val ipcInfo: KorgeIPCInfo = KorgeIPCInfo(KorgeIPCInfo.
         sendEv(IPCPacket.MOUSE_CLICK, e)
     }
 
+    private fun updateSize() {
+        ipc?.writeEvent(IPCPacket.resizePacket(IPCPacket.RESIZE, maxOf(width, 32), maxOf(height, 32), JBUI.pixScale()))
+    }
+
     override fun componentResized(e: ComponentEvent) {
         //println("componentResized: width=$width, height=$height")
-        sendEv(IPCPacket.resizePacket(IPCPacket.RESIZE, maxOf(e.component.width, 32), maxOf(e.component.height, 32)))
+        updateSize()
     }
     override fun componentMoved(e: ComponentEvent) {
     }
