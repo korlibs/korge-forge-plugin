@@ -19,13 +19,19 @@ import com.intellij.ui.content.*
 import com.intellij.util.ui.*
 import com.soywiz.korge.intellij.util.*
 import korge.composable.*
+import korlibs.io.async.*
 import korlibs.io.lang.*
 import korlibs.korge.ipc.*
+import korlibs.korge.kotlincompiler.*
+import korlibs.korge.kotlincompiler.maven.*
 import korlibs.time.*
+import kotlinx.coroutines.*
+import org.jetbrains.kotlin.buildtools.api.*
 import org.korge.intellij.plugin.ipcpreview.*
 import java.awt.*
 import java.awt.event.*
 import java.awt.image.*
+import java.io.*
 import javax.swing.*
 import kotlin.jvm.optionals.*
 
@@ -61,6 +67,38 @@ class KorgePreviewStopAction : KorgeAction("Stop", "Stop", AllIcons.Actions.Susp
 object KorgePreviewTool {
     fun play(e: AnActionEvent, ipc: KorgeIPCInfo? = null, panel: KorgeForgeIPCJPanel? = null) {
         val project: Project = e.project ?: return
+
+        // HERE WE WILL DO THE COMPILATION AND RUNNING without gradle.
+        // We will use module.yaml to detect the dependencies
+        if (false) {
+            Dispatchers.IO.launchUnscoped {
+                val libs = KorgeKotlinCompiler.filesForMaven(
+                    MavenArtifact("org.jetbrains.kotlin", "kotlin-stdlib", "2.0.0"),
+                    MavenArtifact("com.soywiz.korge", "korge-jvm", "999.0.0.999")
+                )
+
+                val mod1 = KorgeKotlinCompiler.Module(
+                    path = File("C:\\Users\\soywiz\\projects\\korge-snake\\modules\\korma-tile-matching"),
+                    libs = libs
+                )
+                val snakeModule = KorgeKotlinCompiler.Module(
+                    path = File("C:\\Users\\soywiz\\projects\\korge-snake"),
+                    moduleDeps = setOf(mod1),
+                    libs = libs
+                )
+                //AccessibleClassSnapshotImpl::
+                //CompilationService.loadImplementation()
+                run {
+                    val ipcPath = ipc?.path ?: KorgeIPCInfo.DEFAULT_PATH
+                    println("KorgeKotlinCompiler.compileAndRun: $snakeModule")
+                    KorgeKotlinCompiler.compileAndRun(snakeModule, mapOf("KORGE_HEADLESS" to "true", "KORGE_IPC" to ipcPath))
+                }
+
+            }
+
+            return
+        }
+
         //e.project?.getService(Runcon::class.java)
         //RunAction
         //RunContextAction(DefaultRunExecutor()).actionPerformed(e)
