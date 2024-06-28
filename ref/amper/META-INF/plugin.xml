@@ -1,0 +1,145 @@
+<idea-plugin package="com.intellij.amper">
+  <id>org.jetbrains.amper</id>
+  <version>241.14494.158</version>
+  <idea-version since-build="241.14494" until-build="241.*"/>
+  <name>Amper</name>
+  <vendor>JetBrains</vendor>
+  <category>Build Tools</category>
+
+  <description><![CDATA[
+<p>Provides support for Amper project configuration tool (read more on <a href="https://github.com/JetBrains/amper">github.com/JetBrains/amper</a>).</p>
+
+<p>Amper is a tool to help configure projects for the purpose of building, packaging, publishing, and more. At its current stage, however, the focus is primarily on configuring projects for the purpose of building.</p>
+
+<p>While the current use case is Kotlin and Kotlin Multiplatform, it also supports Java and Swift (as a requirement for multiplatform). However, there’s nothing preventing it from working with other languages and technology stacks in the future.</p>
+]]></description>
+
+  <content>
+    <module name="intellij.amper.kotlin"/>
+    <module name="intellij.amper.kotlin.wizard"/>
+    <module name="intellij.amper.android"/>
+    <module name="intellij.amper.ios"/>
+  </content>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.json"/>
+    <plugin id="com.intellij.gradle"/>
+    <plugin id="org.jetbrains.plugins.yaml"/>
+    <plugin id="com.intellij.java"/>
+    <plugin id="org.toml.lang"/>
+  </dependencies>
+
+  <resource-bundle>messages.AmperBundle</resource-bundle>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="com.intellij.amper.syncContributor"
+                    interface="com.intellij.amper.project.sync.AmperSyncContributor"
+                    dynamic="true"/>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+
+    <fileType name="Amper" extensions="amper"
+              implementationClass="com.intellij.amper.langImpl.AmperFileType" fieldName="INSTANCE"
+              language="Amper"/>
+    <lang.parserDefinition language="Amper" implementationClass="com.intellij.amper.langImpl.AmperParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Amper" implementationClass="com.intellij.amper.langImpl.AmperSyntaxHighlighterFactory"/>
+    <lang.braceMatcher language="Amper" implementationClass="com.intellij.amper.langImpl.AmperBraceMatcher"/>
+    <enterBetweenBracesDelegate language="Amper" implementationClass="com.intellij.codeInsight.editorActions.enter.EnterBetweenBracesAndBracketsDelegate"/>
+    <quoteHandler fileType="Amper" className="com.intellij.amper.langImpl.AmperQuoteHandler"/>
+    <breadcrumbsInfoProvider implementation="com.intellij.amper.langImpl.AmperBreadcrumbsProvider"/>
+    <focusModeProvider language="Amper" implementationClass="com.intellij.amper.langImpl.AmperFocusModeProvider"/>
+    <lang.foldingBuilder language="Amper" implementationClass="com.intellij.amper.langImpl.AmperFoldingBuilder"/>
+    <lang.commenter language="Amper" implementationClass="com.intellij.amper.langImpl.AmperCommenter"/>
+
+
+    <!--<langCodeStyleSettingsProvider implementation="com.intellij.amper.langImpl.AmperLanguageCodeStyleSettingsProvider"/>
+    <codeStyleSettingsProvider implementation="com.intellij.amper.langImpl.AmperCodeStyleSettingsProvider"/>
+    <lang.formatter language="Amper" implementationClass="com.intellij.amper.langImpl.AmperFormattingBuilderModel"/>
+    <lang.lineWrapStrategy language="Amper" implementationClass="com.intellij.amper.langImpl.AmperLineWrapPositionStrategy"/>-->
+
+    <psi.referenceContributor language="yaml" implementation="com.intellij.amper.codeInsight.AmperPlatformReferenceContributor"/>
+    <psi.referenceContributor language="yaml" implementation="com.intellij.amper.codeInsight.yaml.AmperKeyValueReferenceContributor"/>
+    <useScopeEnlarger implementation="com.intellij.amper.codeInsight.AmperFileUseScopeEnlarger"/>
+    <useScopeEnlarger implementation="com.intellij.amper.codeInsight.toml.AmperCatalogUseScopeEnlarger"/>
+    <referencesSearch implementation="com.intellij.amper.codeInsight.toml.AmperCatalogUsagesSearcher"/>
+    <renameInputValidator implementation="com.intellij.amper.codeInsight.toml.AmperVersionCatalogRenameInputValidator"/>
+    <elementDescriptionProvider implementation="com.intellij.amper.codeInsight.toml.AmperVersionCatalogDescriptionProvider"/>
+
+    <completion.contributor language="yaml" id="Amper" order="before YamlJsonSchema"
+                            implementationClass="com.intellij.amper.codeInsight.yaml.AmperCompletionContributor"/>
+    <completion.contributor language="yaml" id="AmperPackageSearch" order="after Amper"
+                            implementationClass="com.intellij.amper.codeInsight.packagesearch.AmperPackageSearchCompletionContributor"/>
+    <annotator language="yaml" implementationClass="com.intellij.amper.codeInsight.diagnostics.AmperUnresolvedDependencyAnnotator"/>
+    <annotator language="yaml" implementationClass="com.intellij.amper.codeInsight.AmperPlatformAnnotator"/>
+    <annotator language="yaml" implementationClass="com.intellij.amper.codeInsight.diagnostics.AmperDiagnosticsAnnotator"/>
+    <iconProvider order="first" implementation="com.intellij.amper.codeInsight.AmperIconProvider"/>
+
+    <platform.backend.documentation.psiTargetProvider implementation="com.intellij.amper.codeInsight.documentation.AmperPsiDocumentationTargetProvider"/>
+
+    <spellchecker.bundledDictionaryProvider implementation="com.intellij.amper.configuration.AmperBundledDictionaryProvider"/>
+
+    <statistics.projectUsagesCollector implementation="com.intellij.amper.statistic.AmperProjectUsagesCollector"/>
+    <fileTypeUsageSchemaDescriptor schema="Amper Module"
+                                   implementationClass="com.intellij.amper.statistic.AmperModuleFileTypeUsageSchemaDescriptor"/>
+    <fileTypeUsageSchemaDescriptor schema="Amper Template"
+                                   implementationClass="com.intellij.amper.statistic.AmperTemplateFileTypeUsageSchemaDescriptor"/>
+    <platform.backend.documentation.psiTargetProvider implementation="com.intellij.amper.codeInsight.documentation.AmperCatalogDocumentationProvider"/>
+
+    <fileTemplateGroup implementation="com.intellij.amper.templates.AmperFileTemplateFactory"/>
+
+    <!--- import -->
+    <projectOpenProcessor implementation="com.intellij.amper.project.AmperOpenProjectProcessor"/>
+    <amper.syncContributor implementation="com.intellij.amper.project.sync.AmperPreviewStageContributor"/>
+    <amper.syncContributor implementation="com.intellij.amper.project.sync.AmperReadModelSyncContributor"/>
+    <amper.syncContributor implementation="com.intellij.amper.project.sync.AmperProjectStructureSyncContributor"/>
+    <amper.syncContributor implementation="com.intellij.amper.project.sync.AmperLocalDependenciesSyncContributor"/>
+    <amper.syncContributor implementation="com.intellij.amper.project.sync.AmperExternalDependenciesSyncContributor"/>
+    <!--- /import -->
+
+    <registryKey key="amper.preview.stage.enabled" defaultValue="false" description="Enables partial first stage import for Amper"/>
+
+    <localInspection language="yaml" bundle="messages.AmperBundle"
+                     shortName="AmperAndroidVersions" groupKey="Amper.group.name"
+                     key="inspections.incorrect.android.sdk.version" level="WARNING"
+                     enabledByDefault="true"
+                     implementationClass="com.intellij.amper.codeInsight.inspections.AmperAndroidVersionsInspection"
+    />
+    <localInspection language="yaml" bundle="messages.AmperBundle"
+                     shortName="AmperCanConvertToCatalogVersion" groupKey="Amper.group.name"
+                     key="inspections.can.convert.to.catalog.version" level="WARNING"
+                     enabledByDefault="true"
+                     implementationClass="com.intellij.amper.codeInsight.inspections.AmperCanConvertToCatalogVersionInspection"
+    />
+    <localInspection language="yaml" bundle="messages.AmperBundle"
+                     shortName="AmperCanExtractToCatalogVersion" groupKey="Amper.group.name"
+                     key="inspections.can.extract.to.catalog.version" level="INFORMATION"
+                     enabledByDefault="true"
+                     implementationClass="com.intellij.amper.codeInsight.inspections.AmperCanExtractToCatalogVersionInspection"
+    />
+
+    <intentionAction>
+      <language>yaml</language>
+      <className>com.intellij.amper.codeInsight.intention.AmperConvertCatalogDependencyIntention</className>
+      <bundleName>messages.AmperBundle</bundleName>
+      <categoryKey>Amper.group.name</categoryKey>
+    </intentionAction>
+
+    <completion.contributor order="after InplaceRename" language="Amper" id="AmperJsonSchema"
+                            implementationClass="com.intellij.amper.langImpl.adapter.AmperJsonSchemaCompletionContributor"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="JavaScript.JsonSchema">
+    <ProviderFactory implementation="com.intellij.amper.codeInsight.AmperJsonSchemaProviderFactory"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij.json">
+    <jsonSchemaNestedCompletionsTreeProvider implementation="com.intellij.amper.codeInsight.yaml.model.AmperNestedCompletionsTreeProvider"/>
+    <jsonSchemaGotoDeclarationSuppressor implementation="com.intellij.amper.codeInsight.AmperJsonSchemaGotoDeclarationSuppressor"/>
+    <jsonLikePsiWalkerFactory implementation="com.intellij.amper.langImpl.adapter.AmperJsonLikePsiWalkerFactory"/>
+    <jsonSchemaEnabler implementation="com.intellij.amper.langImpl.adapter.AmperJsonSchemaEnabler"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
+    <autoReloadSettingsCollector implementation="com.intellij.amper.gradle.AmperFilesGradleCollector"/>
+  </extensions>
+</idea-plugin>

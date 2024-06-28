@@ -1,0 +1,10 @@
+<idea-plugin package="com.intellij.amper.ios">
+  <dependencies>
+    <module name="kotlin-ultimate.mobile-native"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <runConfigurationProducer implementation="com.intellij.amper.ios.AmperIOSRunConfigurationProducer"/>
+    <runLineMarkerContributor language="yaml" implementationClass="com.intellij.amper.ios.AmperIOSRunLineMarkerContributor"/>
+  </extensions>
+</idea-plugin>
