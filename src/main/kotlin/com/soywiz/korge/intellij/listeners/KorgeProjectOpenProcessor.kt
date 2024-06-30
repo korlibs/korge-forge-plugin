@@ -7,6 +7,7 @@ import com.intellij.openapi.application.*
 import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.project.*
 import com.intellij.openapi.externalSystem.service.project.*
+import com.intellij.openapi.externalSystem.service.project.manage.*
 import com.intellij.openapi.module.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.project.Project
@@ -39,6 +40,7 @@ import org.jetbrains.plugins.gradle.service.project.*
 import org.jetbrains.plugins.gradle.service.project.data.*
 import org.jetbrains.plugins.gradle.util.*
 import java.io.*
+import kotlin.io.path.*
 
 // ProjectOpenProcessorBase
 /**
@@ -73,6 +75,7 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
         val project = ProjectManagerEx.getInstanceEx().newProject(virtualFile.toNioPath(), options) ?: error("Can't create project")
 
         reloadProject(project, virtualFile)
+        //ProjectDataManagerImpl.getInstance().importData(generateDataNodeProjectData(virtualFile.toNioPath().absolutePathString()), project)
 
 
         //return ProjectManagerEx.getInstanceEx().newProject(virtualFile.toNioPath(), OpenProjectTask {
@@ -95,6 +98,7 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
 
         ProjectManagerEx.getInstanceEx().openProject(virtualFile.toNioPath(), options)?.let {
             reloadProject(it, virtualFile)
+            //ProjectDataManagerImpl.getInstance().importData(generateDataNodeProjectData(virtualFile.toNioPath().absolutePathString()), project)
             return it
         }
 
@@ -110,8 +114,7 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
         val platform = TargetPlatform(platforms)
 
 
-        fun generateDataNodeProjectData(): DataNode<ProjectData> {
-            val projectPath = "/Users/soywiz/IdeaProjects/untitled1"
+        fun generateDataNodeProjectData(projectPath: String): DataNode<ProjectData> {
             val projectData = ProjectData(ProjectSystemId.findById("GRADLE")!!, "korge-hello-world", projectPath, projectPath)
             val projectNode = DataNode<ProjectData>(ProjectKeys.PROJECT, projectData, null)
 
