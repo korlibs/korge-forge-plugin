@@ -63,6 +63,14 @@
     -->
 
     <actions>
+        <!--
+        <action
+            id="KorgeLoadProject"
+            class="com.soywiz.korge.intellij.actions.KorgeLoadProject"
+            text="KorGE Load Project"
+            icon="com.soywiz.korge.intellij.KorgeIcons.PARTICLE"/>
+            -->
+
         <action id="KorgeCheckForUpdates" class="com.soywiz.korge.intellij.actions.KorgeCheckForUpdates"
         />
         <action id="KorgeCreateGradleRunConfiguration"
@@ -359,9 +367,7 @@
 
         <notificationGroup id="Korge Plugin: Maven Local Source Fixer" displayType="BALLOON"/>
 
-        <!--
         <projectOpenProcessor id="korge" implementation="com.soywiz.korge.intellij.listeners.KorgeProjectOpenProcessor"/>
-        -->
         <postStartupActivity implementation="com.soywiz.korge.intellij.listeners.KorgeStartupActivity"/>
     </extensions>
 
