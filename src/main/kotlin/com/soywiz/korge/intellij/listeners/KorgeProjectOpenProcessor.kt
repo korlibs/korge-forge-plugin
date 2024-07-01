@@ -1,13 +1,12 @@
 package com.soywiz.korge.intellij.listeners
 
-import com.intellij.externalSystem.JavaProjectData
-import com.intellij.externalSystem.MavenRepositoryData
+import com.intellij.externalSystem.*
 import com.intellij.ide.impl.*
+import com.intellij.jarRepository.*
 import com.intellij.openapi.application.*
 import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.project.*
 import com.intellij.openapi.externalSystem.service.project.*
-import com.intellij.openapi.externalSystem.service.project.manage.*
 import com.intellij.openapi.module.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.project.Project
@@ -15,37 +14,32 @@ import com.intellij.openapi.project.ex.*
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.roots.*
 import com.intellij.openapi.roots.libraries.*
-import com.intellij.openapi.roots.ui.configuration.*
 import com.intellij.openapi.util.text.*
 import com.intellij.openapi.vfs.*
-import com.intellij.packaging.artifacts.*
 import com.intellij.pom.java.*
 import com.intellij.projectImport.*
 import com.intellij.serialization.*
 import com.intellij.util.containers.*
-import com.intellij.workspaceModel.ide.legacyBridge.*
-import com.soywiz.korge.intellij.*
-import com.soywiz.korge.intellij.util.*
+import org.jetbrains.idea.maven.utils.library.*
+import org.jetbrains.idea.maven.utils.library.propertiesEditor.*
 import org.jetbrains.kotlin.config.*
-import org.jetbrains.kotlin.idea.base.projectStructure.*
+import org.jetbrains.kotlin.idea.base.codeInsight.CliArgumentStringBuilder.replaceLanguageFeature
 import org.jetbrains.kotlin.idea.compiler.configuration.*
-import org.jetbrains.kotlin.idea.completion.*
 import org.jetbrains.kotlin.idea.facet.*
 import org.jetbrains.kotlin.idea.framework.*
 import org.jetbrains.kotlin.idea.gradle.configuration.*
 import org.jetbrains.kotlin.idea.gradleJava.configuration.*
 import org.jetbrains.kotlin.idea.gradleTooling.*
+import org.jetbrains.kotlin.idea.projectConfiguration.*
 import org.jetbrains.kotlin.idea.projectModel.*
 import org.jetbrains.kotlin.platform.*
 import org.jetbrains.kotlin.platform.js.*
 import org.jetbrains.kotlin.platform.jvm.*
 import org.jetbrains.plugins.gradle.model.*
-import org.jetbrains.plugins.gradle.model.data.GradleSourceSetData
+import org.jetbrains.plugins.gradle.model.data.*
 import org.jetbrains.plugins.gradle.service.project.*
 import org.jetbrains.plugins.gradle.service.project.data.*
-import org.jetbrains.plugins.gradle.util.*
 import java.io.*
-import kotlin.io.path.*
 
 // ProjectOpenProcessorBase
 /**
@@ -117,7 +111,9 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
     companion object {
         val basePlatforms = listOf(KotlinPlatform.JS, KotlinPlatform.JVM, KotlinPlatform.WASM)
         val platforms = setOf(JsPlatforms.DefaultSimpleJsPlatform, JdkPlatform(JvmTarget.JVM_21), WasmPlatform)
-        val platform = TargetPlatform(platforms)
+        //val platform = TargetPlatform(platforms)
+        val platform = TargetPlatform(setOf(JdkPlatform(JvmTarget.JVM_21)))
+        val GRADLE_SYSTEM_ID = ProjectSystemId("GRADLE")
 
 
         fun generateDataNodeProjectData(projectPath: String): DataNode<ProjectData> {
@@ -126,7 +122,6 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
 
             fun file(path: String): File = File(projectPath, path)
 
-            val GRADLE_SYSTEM_ID = ProjectSystemId("GRADLE")
 
             fun <T : Any> DataNode<*>.add(key: Key<T>, value: T): DataNode<T> {
                 val dataNode = DataNode(key, value, null)
@@ -264,6 +259,9 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                 val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
                 val projectManager = ProjectRootManager.getInstance(project)
                 val modelsProvider = IdeModifiableModelsProviderImpl(project)
+
+                val table = LibraryTablesRegistrar.getInstance().getLibraryTable(project)
+                //modelsProvider.createLibrary("demo1")
                 projectManager.projectSdk = sdk
                 //project.customSdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
 
@@ -275,39 +273,26 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                 project.modifyModules {
                     for (module in project.modules) this.disposeModule(module)
                     val module = this.newNonPersistentModule("mymodule", ModuleTypeManager.getInstance().findByID("JAVA_MODULE").id)
-                    val facets = module.facetManager.createModifiableModel()
+                    //val facets = module.facetManager.createModifiableModel()
                     //val module = this.newModule(virtualFile.toNioPath().absolutePathString() + "/.idea/modules/${virtualFile.name}.iml", ModuleTypeManager.getInstance().findByID("JAVA_MODULE").id)
 
                     val modifiableRootModel = ModuleRootManager.getInstance(module).modifiableModel
                     //modifiableRootModel.sdk = KotlinSdkType.INSTANCE.createSdk("Kotlin SDK");
-                    val table = LibraryTablesRegistrar.getInstance().getLibraryTable(project)
+
+                    //KotlinSourceSetDataService.configureFacet()
+
                     val junit = table.createLibrary("junit").also {
                         it.modifiableModel.addJarDirectory("/tmp/junit.jar", false, OrderRootType.CLASSES)
                     }
-
-                    //KotlinSourceSetDataService.configureFacet()
 
                     //project.customSourceRootType = SourceKotlinRootType.sourceRootType
                     modifiableRootModel.addLibraryEntry(junit)
                     //modifiableRootModel.sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
                     modifiableRootModel.inheritSdk()
                     //modifiableRootModel.addOrderEntry(hyb)
+
                     val contentEntry = modifiableRootModel.addContentEntry(virtualFile)
-                    virtualFile.findChild("src")?.let {
-                        //KotlinFacet
-                        contentEntry.addSourceFolder(it, SourceKotlinRootType).also {
-                            //it.packagePrefix = "commonMain"
-                        }
-                    }
-                    virtualFile.findChild("resources")?.let {
-                        contentEntry.addSourceFolder(it, ResourceKotlinRootType)
-                    }
-                    virtualFile.findChild("test")?.let {
-                        contentEntry.addSourceFolder(it, TestSourceKotlinRootType)
-                    }
-                    virtualFile.findChild("testresources")?.let {
-                        contentEntry.addSourceFolder(it, TestResourceKotlinRootType)
-                    }
+
                     modifiableRootModel.commit()
 
                     //IdeUIModifiableModelsProvider(project, modifiableRootModel, ModulesConfigurator(), ModifiableArtifactModel())
@@ -321,23 +306,93 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
 
                     for (module in this.modules) {
 
-                        val kotlinFacet = module.getOrCreateFacet(modelsProvider, false, "gradle")
+                        val kotlinFacet = module.getOrCreateFacet(modelsProvider, false, "GRADLE")
                         //val kotlinFacet = ideModule.getOrCreateFacet(modelsProvider, false, GradleConstants.SYSTEM_ID.id)
                         kotlinFacet.configureFacet(
                             compilerVersion = IdeKotlinVersion.get("2.0.0"),
                             platform = platform,
                             modelsProvider = modelsProvider,
                             hmppEnabled = true,
-                            pureKotlinSourceFolders = listOf("src"),
-                            dependsOnList = listOf(),
-                            additionalVisibleModuleNames = setOf()
+                            //pureKotlinSourceFolders = listOf("src"),
+                            //dependsOnList = listOf(),
+                            //additionalVisibleModuleNames = setOf()
                         )
                         module.sourceSetName = "commonMain"
                         module.hasExternalSdkConfiguration = false
-                        //kotlinFacet.configuration.settings.compilerSettings?.additionalArguments = ""
+
+                        kotlinFacet.configuration.settings.also {
+                            it.apiLevel = LanguageVersion.KOTLIN_2_0
+                            it.kind = KotlinModuleKind.DEFAULT
+                        }
+                        kotlinFacet.configuration.settings.compilerSettings?.also {
+                            //it.version
+                            it.additionalArguments = ""
+                        }
+                        kotlinFacet.configuration.settings.updateMergedArguments()
+
+                        val facetSettings = KotlinFacetSettingsProvider.getInstance(module.project)?.getInitializedSettings(module)
+                        if (facetSettings != null) {
+                            val feature: LanguageFeature = LanguageFeature.Coroutines
+                            val state = LanguageFeature.State.ENABLED
+                            ModuleRootModificationUtil.updateModel(module) {
+                                facetSettings.apiLevel = feature.sinceVersion
+                                facetSettings.languageLevel = feature.sinceVersion
+                                facetSettings.compilerSettings?.apply {
+                                    additionalArguments = additionalArguments.replaceLanguageFeature(
+                                        feature,
+                                        state,
+                                        getRuntimeLibraryVersion(module),
+                                        separator = " ",
+                                        quoted = false
+                                    )
+                                }
+                            }
+                        }
+
+                        val libraryJarDescriptor = LibraryJarDescriptor.STDLIB_JAR
+
+                        val scope = DependencyScope.COMPILE
+                        val modifiableModelsProvider = IdeaModifiableModelsProvider()
+                        val modifiableModel = modifiableModelsProvider.getModuleModifiableModel(module)
+                        RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("org.jetbrains.kotlin", "kotlin-stdlib-common"), RepositoryLibraryPropertiesModel("2.0.0", true, true)).addSupport(module, modifiableModel!!, modifiableModelsProvider, scope)
+                        RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("com.soywiz.korge", "korge-jvm"), RepositoryLibraryPropertiesModel("999.0.0.999", true, true)).addSupport(module, modifiableModel!!, modifiableModelsProvider, scope)
+                        modifiableModel.commit()
+                        //modifiableModelsProvider.commit
+
+                        //RepositoryAddLibraryAction.addLibraryToModule(
+                        //    RepositoryLibraryDescription.findDescription(libraryJarDescriptor.repositoryLibraryProperties),
+                        //    module,
+                        //    //kotlinStdlibVersion ?: KotlinPluginLayout.standaloneCompilerVersion.artifactVersion,
+                        //    KotlinPluginLayout.standaloneCompilerVersion.artifactVersion,
+                        //    scope,
+                        //    /* downloadSources = */ true,
+                        //    /* downloadJavaDocs = */ true
+                        //)
+
+                        val modifiableRootModel = ModuleRootManager.getInstance(module).modifiableModel
+                        //val contentEntry = modifiableRootModel.addContentEntry(virtualFile)
+                        val contentEntry = modifiableRootModel.contentEntries.first()
+                        virtualFile.findChild("src")?.let {
+                            //KotlinFacet
+                            contentEntry.addSourceFolder(it, SourceKotlinRootType).also {
+                                //it.packagePrefix = "commonMain"
+                            }
+                        }
+                        virtualFile.findChild("resources")?.let {
+                            contentEntry.addSourceFolder(it, ResourceKotlinRootType)
+                        }
+                        virtualFile.findChild("test")?.let {
+                            contentEntry.addSourceFolder(it, TestSourceKotlinRootType)
+                        }
+                        virtualFile.findChild("testresources")?.let {
+                            contentEntry.addSourceFolder(it, TestResourceKotlinRootType)
+                        }
+                        modifiableRootModel.commit()
                     }
 
                 }
+
+                modelsProvider.commit()
             }
 
         }

@@ -3,7 +3,6 @@ package com.soywiz.korge.intellij
 import com.intellij.openapi.command.undo.*
 import com.intellij.openapi.vfs.*
 import com.soywiz.korge.intellij.util.*
-import korlibs.io.async.*
 import korlibs.io.file.*
 import korlibs.io.file.std.*
 import korlibs.io.stream.*
