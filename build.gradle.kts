@@ -169,7 +169,7 @@ val kotlinVersion: String by project
 dependencies {
     implementation("com.soywiz.korge:korge-jvm:$korgeVersion")
     implementation("com.soywiz.korge:korge-ipc:$korgeVersion")
-    implementation("com.soywiz.korge:korge-kotlin-compiler:$korgeVersion")
+    //implementation("com.soywiz.korge:korge-kotlin-compiler:$korgeVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
     implementation("org.jetbrains.compose.runtime:runtime:1.6.11")

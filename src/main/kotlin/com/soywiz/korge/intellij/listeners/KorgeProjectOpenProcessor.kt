@@ -18,13 +18,18 @@ import com.intellij.openapi.roots.libraries.*
 import com.intellij.openapi.roots.ui.configuration.*
 import com.intellij.openapi.util.text.*
 import com.intellij.openapi.vfs.*
+import com.intellij.packaging.artifacts.*
 import com.intellij.pom.java.*
 import com.intellij.projectImport.*
 import com.intellij.serialization.*
 import com.intellij.util.containers.*
+import com.intellij.workspaceModel.ide.legacyBridge.*
+import com.soywiz.korge.intellij.*
+import com.soywiz.korge.intellij.util.*
 import org.jetbrains.kotlin.config.*
 import org.jetbrains.kotlin.idea.base.projectStructure.*
 import org.jetbrains.kotlin.idea.compiler.configuration.*
+import org.jetbrains.kotlin.idea.completion.*
 import org.jetbrains.kotlin.idea.facet.*
 import org.jetbrains.kotlin.idea.framework.*
 import org.jetbrains.kotlin.idea.gradle.configuration.*
@@ -46,14 +51,15 @@ import kotlin.io.path.*
 /**
  * [com.intellij.openapi.externalSystem.importing.AbstractOpenProjectProvider.openProject]
  * [org.jetbrains.plugins.gradle.service.project.open.GradleOpenProjectProvider.linkToExistingProject]
+ * [org.jetbrains.kotlin.idea.gradleJava.configuration.KotlinGradleLibraryDataService]
  */
 class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
     override val name: String get() = "korge"
 
     override fun canOpenProject(file: VirtualFile): Boolean {
         println("KorgeProjectOpenProcessor.canOpenProject: file=$file")
-        //return true
-        return false
+        return file.findChild("korge.yml") != null
+        //return false
     }
 
     override fun doOpenProject(virtualFile: VirtualFile, projectToClose: Project?, forceOpenInNewFrame: Boolean): Project? {
@@ -74,7 +80,7 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
         }
         val project = ProjectManagerEx.getInstanceEx().newProject(virtualFile.toNioPath(), options) ?: error("Can't create project")
 
-        reloadProject(project, virtualFile)
+        //reloadProject(project, virtualFile)
         //ProjectDataManagerImpl.getInstance().importData(generateDataNodeProjectData(virtualFile.toNioPath().absolutePathString()), project)
 
 
@@ -253,13 +259,24 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
             //KorgeSourceSetData("", "", "", "", "").set
 
             //project.customSdk = KotlinSdkType.INSTANCE.createSdk("Kotlin SDK")
-            project.customSdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
+
             ApplicationManager.getApplication().runWriteAction {
+                val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
+                val projectManager = ProjectRootManager.getInstance(project)
+                val modelsProvider = IdeModifiableModelsProviderImpl(project)
+                projectManager.projectSdk = sdk
+                //project.customSdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
+
+                //project.modifyModules {
+                //}
+                //project.save()
+
                 //project.rootFile = virtualFile
                 project.modifyModules {
                     for (module in project.modules) this.disposeModule(module)
                     val module = this.newNonPersistentModule("mymodule", ModuleTypeManager.getInstance().findByID("JAVA_MODULE").id)
-                    //val module = this.newModule(virtualFile.toNioPath().absolutePathString() + "/module.iml", ModuleTypeManager.getInstance().findByID("JAVA_MODULE").id)
+                    val facets = module.facetManager.createModifiableModel()
+                    //val module = this.newModule(virtualFile.toNioPath().absolutePathString() + "/.idea/modules/${virtualFile.name}.iml", ModuleTypeManager.getInstance().findByID("JAVA_MODULE").id)
 
                     val modifiableRootModel = ModuleRootManager.getInstance(module).modifiableModel
                     //modifiableRootModel.sdk = KotlinSdkType.INSTANCE.createSdk("Kotlin SDK");
@@ -270,21 +287,11 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
 
                     //KotlinSourceSetDataService.configureFacet()
 
-                    val modelsProvider = IdeModifiableModelsProviderImpl(project)
-                    val kotlinFacet = module.getOrCreateFacet(modelsProvider, true, "gradle", false)
-                    kotlinFacet.configureFacet(
-                        IdeKotlinVersion.fromLanguageVersion(LanguageVersion.KOTLIN_2_0),
-                        platform,
-                        modelsProvider,
-                        false,
-                        listOf("src"),
-                        listOf(),
-                        setOf()
-                    )
-
+                    //project.customSourceRootType = SourceKotlinRootType.sourceRootType
                     modifiableRootModel.addLibraryEntry(junit)
+                    //modifiableRootModel.sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull()
                     modifiableRootModel.inheritSdk()
-                    //modifiableRootModel.addOrderEntry(OrderEntry)
+                    //modifiableRootModel.addOrderEntry(hyb)
                     val contentEntry = modifiableRootModel.addContentEntry(virtualFile)
                     virtualFile.findChild("src")?.let {
                         //KotlinFacet
@@ -302,6 +309,34 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                         contentEntry.addSourceFolder(it, TestResourceKotlinRootType)
                     }
                     modifiableRootModel.commit()
+
+                    //IdeUIModifiableModelsProvider(project, modifiableRootModel, ModulesConfigurator(), ModifiableArtifactModel())
+
+                    //modifiableRootModel.commit()
+                }
+
+                //project.save()
+
+                project.modifyModules {
+
+                    for (module in this.modules) {
+
+                        val kotlinFacet = module.getOrCreateFacet(modelsProvider, false, "gradle")
+                        //val kotlinFacet = ideModule.getOrCreateFacet(modelsProvider, false, GradleConstants.SYSTEM_ID.id)
+                        kotlinFacet.configureFacet(
+                            compilerVersion = IdeKotlinVersion.get("2.0.0"),
+                            platform = platform,
+                            modelsProvider = modelsProvider,
+                            hmppEnabled = true,
+                            pureKotlinSourceFolders = listOf("src"),
+                            dependsOnList = listOf(),
+                            additionalVisibleModuleNames = setOf()
+                        )
+                        module.sourceSetName = "commonMain"
+                        module.hasExternalSdkConfiguration = false
+                        //kotlinFacet.configuration.settings.compilerSettings?.additionalArguments = ""
+                    }
+
                 }
             }
 

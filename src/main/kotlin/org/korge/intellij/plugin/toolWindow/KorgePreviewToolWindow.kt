@@ -22,8 +22,6 @@ import korge.composable.*
 import korlibs.io.async.*
 import korlibs.io.lang.*
 import korlibs.korge.ipc.*
-import korlibs.korge.kotlincompiler.*
-import korlibs.korge.kotlincompiler.maven.*
 import korlibs.time.*
 import kotlinx.coroutines.*
 import org.jetbrains.kotlin.buildtools.api.*
@@ -70,6 +68,7 @@ object KorgePreviewTool {
 
         // HERE WE WILL DO THE COMPILATION AND RUNNING without gradle.
         // We will use module.yaml to detect the dependencies
+        /*
         if (false) {
             Dispatchers.IO.launchUnscoped {
                 val libs = KorgeKotlinCompiler.filesForMaven(
@@ -98,6 +97,7 @@ object KorgePreviewTool {
 
             return
         }
+        */
 
         //e.project?.getService(Runcon::class.java)
         //RunAction
