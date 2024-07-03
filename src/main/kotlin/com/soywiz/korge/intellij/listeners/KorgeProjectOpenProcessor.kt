@@ -7,6 +7,7 @@ import com.intellij.openapi.application.*
 import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.project.*
 import com.intellij.openapi.externalSystem.service.project.*
+import com.intellij.openapi.externalSystem.service.project.manage.*
 import com.intellij.openapi.module.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.project.Project
@@ -40,6 +41,7 @@ import org.jetbrains.plugins.gradle.model.data.*
 import org.jetbrains.plugins.gradle.service.project.*
 import org.jetbrains.plugins.gradle.service.project.data.*
 import java.io.*
+import kotlin.io.path.*
 
 // ProjectOpenProcessorBase
 /**
@@ -52,8 +54,8 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
 
     override fun canOpenProject(file: VirtualFile): Boolean {
         println("KorgeProjectOpenProcessor.canOpenProject: file=$file")
-        return file.findChild("korge.yml") != null
-        //return false
+        //return file.findChild("korge.yml") != null
+        return false
     }
 
     override fun doOpenProject(virtualFile: VirtualFile, projectToClose: Project?, forceOpenInNewFrame: Boolean): Project? {
@@ -97,7 +99,8 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
 
 
         ProjectManagerEx.getInstanceEx().openProject(virtualFile.toNioPath(), options)?.let {
-            reloadProject(it, virtualFile)
+            //reloadProject(it, virtualFile)
+            reloadProject2(it, virtualFile)
             //ProjectDataManagerImpl.getInstance().importData(generateDataNodeProjectData(virtualFile.toNioPath().absolutePathString()), project)
             return it
         }
@@ -109,7 +112,8 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
     }
 
     companion object {
-        val basePlatforms = listOf(KotlinPlatform.JS, KotlinPlatform.JVM, KotlinPlatform.WASM)
+        //val basePlatforms = listOf(KotlinPlatform.JS, KotlinPlatform.JVM, KotlinPlatform.WASM)
+        val basePlatforms = listOf(KotlinPlatform.JVM)
         val platforms = setOf(JsPlatforms.DefaultSimpleJsPlatform, JdkPlatform(JvmTarget.JVM_21), WasmPlatform)
         //val platform = TargetPlatform(platforms)
         val platform = TargetPlatform(setOf(JdkPlatform(JvmTarget.JVM_21)))
@@ -119,9 +123,13 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
         fun generateDataNodeProjectData(projectPath: String): DataNode<ProjectData> {
             val projectData = ProjectData(ProjectSystemId.findById("GRADLE")!!, "korge-hello-world", projectPath, projectPath)
             val projectNode = DataNode<ProjectData>(ProjectKeys.PROJECT, projectData, null)
+            val rootProjectPath = File(projectPath)
 
-            fun file(path: String): File = File(projectPath, path)
+            fun file(path: String): File = File(rootProjectPath, path)
 
+            //val srcJs = file("src@js")
+            val srcJs = file("src")
+            val resourcesJs = file("resources")
 
             fun <T : Any> DataNode<*>.add(key: Key<T>, value: T): DataNode<T> {
                 val dataNode = DataNode(key, value, null)
@@ -130,10 +138,11 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
             }
 
             val libJdk8 = LibraryData(GRADLE_SYSTEM_ID, "", false).also {
-                var group = "org.jetbrains.kotlin"
-                var name = "kotlin-stdlib-jdk8"
+                val group = "org.jetbrains.kotlin"
+                val name = "kotlin-stdlib"
+                val version = "2.0.0"
+                ///////////////
                 val groupPath = group.replace('.', '/')
-                var version = "1.5.21"
                 val full = "$group:$name:$version"
                 it.setGroup(group)
                 it.artifactId = name
@@ -166,8 +175,15 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                     it.moduleIds = setOf("korge-hello-world:jsMain", "korge-hello-world:jsTest")
                     it.archiveFile = File(projectPath, "build/libs/korge-hello-world-js.klib")
                 })
-                val gradleSourceSetDataCommon = GradleSourceSetData("korge-hello-world:commonMain", "korge-hello-world:commonMain", "korge-hello-world:commonMain", projectPath, projectPath)
+                moduleNode.add(KotlinTargetData.KEY, KotlinTargetData("common").also {
+                    it.moduleIds = setOf("korge-hello-world:commonMain", "korge-hello-world:commonTest")
+                    it.archiveFile = File(projectPath, "build/libs/korge-hello-world-common.klib")
+                })
+                //val gradleSourceSetDataCommon = GradleSourceSetData("korge-hello-world:commonMain", "korge-hello-world:commonMain", "korge-hello-world:commonMain", projectPath, projectPath)
                 val gradleSourceSetDataJs = GradleSourceSetData("korge-hello-world:jsMain", "korge-hello-world:jsMain", "korge-hello-world:jsMain", projectPath, projectPath)
+                moduleNode.add(KotlinGradleProjectData.KEY, KotlinGradleProjectData().also {
+                    it.isHmpp = true
+                })
                 moduleNode.add(GradleSourceSetData.KEY, gradleSourceSetDataJs).also { sourceSetNode ->
                     val settings = KotlinLanguageSettingsImpl(
                         languageVersion = "2.0",
@@ -199,8 +215,8 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                     val jsSourceSet = KotlinSourceSetImpl(
                         name = "jsMain",
                         languageSettings = settings,
-                        sourceDirs = setOf(file("src@js")),
-                        resourceDirs = setOf(file("resources@js")),
+                        sourceDirs = setOf(srcJs),
+                        resourceDirs = setOf(resourcesJs),
                         regularDependencies = arrayOf(),
                         intransitiveDependencies = arrayOf(),
                         declaredDependsOnSourceSets = setOf(),
@@ -232,20 +248,24 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                     it.putValue(ExternalSystemSourceType.SOURCE, "build/classes/kotlin/js/main")
                     it.putValue(ExternalSystemSourceType.RESOURCE, "build/processedResources/js/main")
                 }))
-                moduleNode.add(ProjectKeys.MODULE_DEPENDENCY, ModuleDependencyData(gradleSourceSetDataJs, gradleSourceSetDataCommon).also {
+                //moduleNode.add(ProjectKeys.MODULE_DEPENDENCY, ModuleDependencyData(gradleSourceSetDataJs, gradleSourceSetDataCommon).also {
+                //    it.scope = DependencyScope.COMPILE
+                //})
+                moduleNode.add(ProjectKeys.LIBRARY_DEPENDENCY, LibraryDependencyData(gradleSourceSetDataJs, libJdk8, LibraryLevel.MODULE).also {
                     it.scope = DependencyScope.COMPILE
                 })
-                moduleNode.add(ProjectKeys.LIBRARY_DEPENDENCY, LibraryDependencyData(gradleSourceSetDataJs, libJdk8, LibraryLevel.PROJECT).also {
-                    it.scope = DependencyScope.COMPILE
-                })
-                moduleNode.add(ProjectKeys.CONTENT_ROOT, ContentRootData(GRADLE_SYSTEM_ID, file("src@js").absolutePath).also {
-                    it.storePath(ExternalSystemSourceType.SOURCE, file("src@js").absolutePath)
+                moduleNode.add(ProjectKeys.CONTENT_ROOT, ContentRootData(GRADLE_SYSTEM_ID, srcJs.absolutePath).also {
+                    it.storePath(ExternalSystemSourceType.SOURCE, srcJs.absolutePath)
                 })
             }
 
             // Libraries
             projectNode.add(ProjectKeys.LIBRARY, libJdk8)
             return projectNode
+        }
+
+        fun reloadProject2(project: Project, virtualFile: VirtualFile) {
+            ProjectDataManagerImpl.getInstance().importData(generateDataNodeProjectData(virtualFile.toNioPath().absolutePathString()), project)
         }
 
         fun reloadProject(project: Project, virtualFile: VirtualFile) {
@@ -352,11 +372,14 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                         val libraryJarDescriptor = LibraryJarDescriptor.STDLIB_JAR
 
                         val scope = DependencyScope.COMPILE
+                        val testScope = DependencyScope.TEST
                         val modifiableModelsProvider = IdeaModifiableModelsProvider()
-                        val modifiableModel = modifiableModelsProvider.getModuleModifiableModel(module)
-                        RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("org.jetbrains.kotlin", "kotlin-stdlib-common"), RepositoryLibraryPropertiesModel("2.0.0", true, true)).addSupport(module, modifiableModel!!, modifiableModelsProvider, scope)
-                        RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("com.soywiz.korge", "korge-jvm"), RepositoryLibraryPropertiesModel("999.0.0.999", true, true)).addSupport(module, modifiableModel!!, modifiableModelsProvider, scope)
-                        modifiableModel.commit()
+                        modifiableModelsProvider.getModuleModifiableModel(module)?.let { modifiableRootModel ->
+                            RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("org.jetbrains.kotlin", "kotlin-stdlib-jvm"), RepositoryLibraryPropertiesModel("2.0.0", true, true)).addSupport(module, modifiableRootModel, modifiableModelsProvider, scope)
+                            RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("org.jetbrains.kotlin", "kotlin-test-junit"), RepositoryLibraryPropertiesModel("2.0.0", true, true)).addSupport(module, modifiableRootModel, modifiableModelsProvider, testScope)
+                            RepositoryLibrarySupport(module.project, RepositoryLibraryDescription.findDescription("com.soywiz.korge", "korge-jvm"), RepositoryLibraryPropertiesModel("999.0.0.999", true, true)).addSupport(module, modifiableRootModel, modifiableModelsProvider, scope)
+                            modifiableRootModel.commit()
+                        }
                         //modifiableModelsProvider.commit
 
                         //RepositoryAddLibraryAction.addLibraryToModule(
@@ -378,6 +401,8 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                                 //it.packagePrefix = "commonMain"
                             }
                         }
+                        //contentEntry.addExcludeFolder(".korge")
+                        //contentEntry.addExcludeFolder(".idea")
                         virtualFile.findChild("resources")?.let {
                             contentEntry.addSourceFolder(it, ResourceKotlinRootType)
                         }
