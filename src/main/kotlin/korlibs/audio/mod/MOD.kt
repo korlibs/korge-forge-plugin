@@ -329,7 +329,7 @@ class Protracker : BaseModuleTracker() {
 
         chvu = FloatArray(channels)
 
-        val computeTime = measureTime {
+        val computeTime = kotlin.time.measureTime {
             totalLengthInSamples = computeTime().toLong()
         }
         println("Computed song length in...$computeTime, totalLengthInSamples=$totalLengthInSamples")

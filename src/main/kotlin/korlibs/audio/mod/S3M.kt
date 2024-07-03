@@ -441,7 +441,7 @@ class Screamtracker : BaseModuleTracker() {
 
         chvu = FloatArray(channels) { 0f }
 
-        val computeTime = measureTime {
+        val computeTime = kotlin.time.measureTime {
             totalLengthInSamples = computeTime().toLong()
         }
         println("COMPUTED LENGTH IN: $computeTime, totalLengthInSamples=$totalLengthInSamples")
