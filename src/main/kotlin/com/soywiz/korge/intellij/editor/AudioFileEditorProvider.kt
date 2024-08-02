@@ -8,22 +8,14 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.JBLabel
-import com.soywiz.korge.intellij.audio.AwtNativeSoundProvider
-import com.soywiz.korge.intellij.runBackgroundTaskWithProgress
-import korlibs.audio.sound.readMusic
 import com.soywiz.korge.intellij.toVfs
 import com.soywiz.korge.intellij.util.backgroundTask
 import com.soywiz.korge.intellij.util.onClick
 import korlibs.audio.format.*
-import korlibs.audio.mod.MOD
-import korlibs.audio.mod.S3M
-import korlibs.audio.mod.XM
-import korlibs.audio.sound.PlaybackParameters
-import korlibs.audio.sound.Sound
-import korlibs.audio.sound.SoundChannel
+import korlibs.audio.format.mod.*
+import korlibs.audio.sound.*
 import korlibs.time.toTimeString
 import kotlinx.coroutines.*
-import org.jetbrains.kotlin.idea.gradleTooling.get
 import javax.swing.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -52,7 +44,7 @@ class AudioFileEditorProvider : FileEditorProvider, DumbAware {
                     project.backgroundTask("Loading sound") {
                         runBlocking {
                             sound.complete(
-                                AwtNativeSoundProvider.createSound(
+                                nativeSoundProvider.createSound(
                                     file.toVfs(),
                                     streaming = true,
                                     props = AudioDecodingProps.DEFAULT.copy(
