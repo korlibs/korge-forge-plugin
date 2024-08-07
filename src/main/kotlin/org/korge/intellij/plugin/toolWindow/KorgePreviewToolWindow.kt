@@ -1,37 +1,20 @@
 package org.korge.intellij.plugin.toolWindow
 
-import androidx.compose.runtime.*
 import com.intellij.execution.*
 import com.intellij.execution.actions.*
 import com.intellij.execution.executors.*
 import com.intellij.execution.impl.*
 import com.intellij.execution.process.*
-import com.intellij.execution.runners.*
-import com.intellij.execution.ui.*
 import com.intellij.icons.*
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.externalSystem.service.execution.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.wm.*
-import com.intellij.ui.*
 import com.intellij.ui.content.*
-import com.intellij.util.ui.*
 import com.soywiz.korge.intellij.util.*
-import korge.composable.*
-import korlibs.io.async.*
-import korlibs.io.lang.*
 import korlibs.korge.ipc.*
 import korlibs.time.*
-import kotlinx.coroutines.*
-import org.jetbrains.kotlin.buildtools.api.*
 import org.korge.intellij.plugin.ipcpreview.*
-import java.awt.*
-import java.awt.event.*
-import java.awt.image.*
-import java.io.*
-import javax.swing.*
-import kotlin.jvm.optionals.*
 
 //@Composable
 //fun MyFunc() {

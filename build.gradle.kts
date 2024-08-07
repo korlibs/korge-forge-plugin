@@ -5,7 +5,7 @@ import java.security.MessageDigest
 plugins {
     java
     idea
-    id("org.jetbrains.intellij") version "1.17.3"
+    id("org.jetbrains.intellij") version "1.17.4"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     kotlin("jvm") version "2.0.0"
     kotlin("plugin.compose") version "2.0.0"
@@ -65,13 +65,15 @@ repositories {
 
 intellij {
     // IntelliJ IDEA dependency
-    version.set("IC-2024.1.1")
+    //version.set("IC-2024.2")
+    version.set("IC-2024.1.5")
     // Bundled plugin dependencies
     plugins.addAll(
         "gradle",
         "java",
         "platform-images",
-        "Kotlin",
+        //"org.jetbrains.kotlin",
+        "kotlin",
         "gradle-java",
         "yaml"
     )

@@ -35,31 +35,31 @@
 		]]>
     </change-notes>
 
+    <dependencies>
+        <plugin id="org.jetbrains.kotlin" />
+        <plugin id="org.jetbrains.plugins.gradle" />
+        <plugin id="com.intellij.modules.java" />
+        <plugin id="com.intellij.platform.images" />
+        <plugin id="org.jetbrains.plugins.yaml" />
+        <!--
+        <depends>com.intellij.modules.lang</depends>
+        <depends>org.jetbrains.kotlin</depends>
+        <depends>com.intellij.gradle</depends>
+        <depends>org.jetbrains.idea.maven</depends>
+        <depends>org.jetbrains.plugins.gradle.java</depends>
+        <depends>org.jetbrains.idea.gradle.ext</depends>
+        <depends>com.intellij.gradle</depends>
+        <depends>com.intellij.modules.gradle.java</depends>
+        <depends>com.intellij.modules.java</depends>
+        <depends>com.intellij.platform.images</depends>
+        <depends>org.jetbrains.plugins.yaml</depends>
+        <depends>com.intellij.modules.platform</depends>
+        -->
+    </dependencies>
+
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <!-- uncomment to enable plugin in all products
-    -->
-    <!--
-    <depends>com.intellij.modules.lang</depends>
-    <depends>org.jetbrains.kotlin</depends>
-    <depends>com.intellij.gradle</depends>
-    <depends>org.jetbrains.idea.maven</depends>
-    -->
-    <depends>org.jetbrains.plugins.gradle</depends>
-    <!--
-    <depends>org.jetbrains.plugins.gradle.java</depends>
-    -->
-    <depends>org.jetbrains.kotlin</depends>
-    <!--<depends>org.jetbrains.idea.gradle.ext</depends>-->
-    <!--
-    <depends>com.intellij.gradle</depends>
-    <depends>com.intellij.modules.gradle.java</depends>
-    -->
-    <depends>com.intellij.modules.java</depends>
-    <depends>com.intellij.platform.images</depends>
-    <depends>org.jetbrains.plugins.yaml</depends>
-    <!--
-    <depends>com.intellij.modules.platform</depends>
     -->
 
     <actions>
