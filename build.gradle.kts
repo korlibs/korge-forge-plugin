@@ -1,4 +1,7 @@
 import org.jetbrains.intellij.platform.gradle.*
+import org.jetbrains.intellij.platform.gradle.tasks.*
+import org.jetbrains.kotlin.gradle.targets.js.*
+import java.security.*
 
 plugins {
     java
@@ -110,7 +113,7 @@ dependencies {
 intellijPlatform {
     buildSearchableOptions = true
     instrumentCode = true
-    projectName = "Korge"
+    projectName = "KorgePlugin"
     //sandboxContainer = "..."
 
     pluginConfiguration {
@@ -166,7 +169,6 @@ intellij {
 //    }
 //}
 
-/*
 tasks {
     // @TODO: Dependency substitution: https://docs.gradle.org/current/userguide/composite_builds.html
 
@@ -174,9 +176,11 @@ tasks {
     //    dependsOn(gradle.includedBuild("korge-next").task(":publishJvmPublicationToMavenLocal"))
     //}
 
-    val runIde by existing(org.jetbrains.intellij.tasks.RunIdeTask::class) {
+
+    val runIde by existing(RunIdeTask::class) {
         maxHeapSize = "4g"
-        systemDir.set(File(System.getProperty("user.home"), ".korge/idea-system-dir"))
+        this.workingDir = File(System.getProperty("user.home"), ".korge/idea-work-dir")
+        //systemDir.set(File(System.getProperty("user.home"), ".korge/idea-system-dir"))
         //dependsOn(":korge-next:publishJvmPublicationToMavenLocal")
     }
 
@@ -236,8 +240,6 @@ tasks {
 
     //afterEvaluate { println((runIde.get() as Task).dependsOn.toList()) }
 }
-
- */
 
 //println(gradle.includedBuilds)
 
