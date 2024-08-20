@@ -1,11 +1,9 @@
-import org.jetbrains.intellij.tasks.*
-import org.jetbrains.kotlin.gradle.targets.js.*
-import java.security.MessageDigest
+import org.jetbrains.intellij.platform.gradle.*
 
 plugins {
     java
     idea
-    id("org.jetbrains.intellij") version "1.17.4"
+    id("org.jetbrains.intellij.platform")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     kotlin("jvm") version "2.0.0"
     kotlin("plugin.compose") version "2.0.0"
@@ -28,8 +26,8 @@ plugins {
 
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
-    kotlinOptions {
-        this.jvmTarget = "17"
+    compilerOptions {
+        this.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
     //sourceCompatibility = JavaVersion.VERSION_17.toString()
     //targetCompatibility = JavaVersion.VERSION_17.toString()
@@ -42,6 +40,19 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        vendor = JvmVendorSpec.JETBRAINS
+    }
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        vendor = JvmVendorSpec.JETBRAINS
+    }
 }
 
 sourceSets {
@@ -57,23 +68,84 @@ sourceSets {
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    google()
+dependencies {
+    intellijPlatform {
+        jetbrainsRuntime()
+
+        intellijIdeaCommunity("2024.2.0.1", useInstaller = false)
+
+        // https://plugins.jetbrains.com/docs/intellij/plugin-dependencies.html#ids-of-bundled-plugins
+        bundledPlugins(
+            "com.intellij.java",
+            //"com.intellij.plugins.platform-images",
+            "org.jetbrains.kotlin",
+            "com.intellij.gradle",
+            "com.intellij.platform.images",
+            "org.jetbrains.plugins.gradle",
+            "org.jetbrains.plugins.yaml",
+        )
+        plugins(
+            //"org.jetbrains.plugins.gradle-java",
+        )
+
+        //plugins.addAll(
+        //    "gradle",
+        //    "java",
+        //    "platform-images",
+        //    //"org.jetbrains.kotlin",
+        //    "Kotlin",
+        //    "gradle-java",
+        //    "yaml"
+        //)
+
+
+        pluginVerifier()
+        zipSigner()
+        instrumentationTools()
+
+        testFramework(TestFrameworkType.Platform)
+    }
 }
 
+intellijPlatform {
+    buildSearchableOptions = true
+    instrumentCode = true
+    projectName = "Korge"
+    //sandboxContainer = "..."
+
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild = "242"
+            //untilBuild = "242.*"
+        }
+    }
+    publishing {
+        // ...
+    }
+    signing {
+        // ...
+    }
+    pluginVerification {
+        // ...
+    }
+}
+
+//intellijPlatform {
+//}
+
+
+/*
 intellij {
     // IntelliJ IDEA dependency
-    //version.set("IC-2024.2")
-    version.set("IC-2024.1.5")
+    version.set("IC-2024.2")
+    //version.set("IC-2024.1.5")
     // Bundled plugin dependencies
     plugins.addAll(
         "gradle",
         "java",
         "platform-images",
         //"org.jetbrains.kotlin",
-        "kotlin",
+        "Kotlin",
         "gradle-java",
         "yaml"
     )
@@ -85,14 +157,16 @@ intellij {
 
     //sandboxDir.set(layout.projectDirectory.dir(".sandbox").toString())
 }
+*/
 
-tasks.withType(PublishPluginTask::class.java) {
-    val publishToken = System.getenv("INTELLIJ_PUBLISH_TOKEN") ?: rootProject.findProperty("intellij.token.publish")
-    if (publishToken != null) {
-        this.token.set(publishToken.toString())
-    }
-}
+//tasks.withType(PublishPluginTask::class.java) {
+//    val publishToken = System.getenv("INTELLIJ_PUBLISH_TOKEN") ?: rootProject.findProperty("intellij.token.publish")
+//    if (publishToken != null) {
+//        this.token.set(publishToken.toString())
+//    }
+//}
 
+/*
 tasks {
     // @TODO: Dependency substitution: https://docs.gradle.org/current/userguide/composite_builds.html
 
@@ -162,6 +236,8 @@ tasks {
 
     //afterEvaluate { println((runIde.get() as Task).dependsOn.toList()) }
 }
+
+ */
 
 //println(gradle.includedBuilds)
 

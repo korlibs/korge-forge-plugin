@@ -6,6 +6,7 @@
 *.iml
 .DS_Store
 /.kotlin
+/.intellijPlatform
 
 /deps
 /modules

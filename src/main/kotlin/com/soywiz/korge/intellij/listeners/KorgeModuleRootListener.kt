@@ -1,11 +1,7 @@
 package com.soywiz.korge.intellij.listeners
 
-import com.intellij.openapi.module.ModuleTypeId
 import com.intellij.openapi.roots.*
-import com.jetbrains.rd.util.string.*
-import com.soywiz.korge.intellij.*
 import com.soywiz.korge.intellij.util.*
-import org.jetbrains.kotlin.config.*
 
 class KorgeModuleRootListener : ModuleRootListener {
 

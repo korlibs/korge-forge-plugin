@@ -1,6 +1,6 @@
 package com.soywiz.korge.intellij
 
-import org.jetbrains.plugins.gradle.service.project.*
+//import org.jetbrains.plugins.gradle.service.project.*
 
 /*
 class KorgeInitializerComponent {

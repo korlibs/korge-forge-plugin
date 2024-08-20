@@ -1,16 +1,8 @@
 package com.soywiz.korge.intellij.annotator
 
-import com.intellij.codeInsight.intention.impl.BaseIntentionAction
-import com.intellij.icons.AllIcons
-import com.intellij.lang.annotation.AnnotationHolder
-import com.intellij.lang.annotation.Annotator
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.soywiz.korge.intellij.actions.KorgeStoreAction
-import org.jetbrains.yaml.psi.YAMLKeyValue
+import com.intellij.lang.annotation.*
+import com.intellij.psi.*
+import org.jetbrains.yaml.psi.*
 
 class DepsKProjectYmlAnnotator : Annotator {
     companion object {

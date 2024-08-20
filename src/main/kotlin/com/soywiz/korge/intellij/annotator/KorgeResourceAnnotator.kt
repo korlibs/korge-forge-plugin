@@ -25,7 +25,6 @@ import korlibs.datastructure.linkedHashMapOf
 import korlibs.image.awt.toBufferedImage
 import org.jetbrains.kotlin.psi.KtArrayAccessExpression
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
-import org.jetbrains.plugins.notebooks.visualization.use
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.*
@@ -188,6 +187,14 @@ fun Font.getFontMetrics(component: Component?): FontMetrics =
         it.font = this
         it.fontMetrics
     }
+
+private inline fun <TG : Graphics, T> TG.use(block: (TG) -> T): T {
+    try {
+        return block(this)
+    } finally {
+        dispose()
+    }
+}
 
 fun getFontPreview(component: Component?, height: Int, ttfBytes: ByteArray, color: Color, str: String? = null): Pair<Font, BufferedImage> {
     val font = Font.createFont(Font.TRUETYPE_FONT, ttfBytes.inputStream()).deriveFont(height.toFloat())

@@ -1,6 +1,7 @@
 package com.soywiz.korge.intellij.actions
 
 import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.*
 import com.intellij.*
 import com.intellij.icons.*
@@ -517,10 +518,10 @@ class KorgeWebPreviewFileEditor(val project: Project, file: KorgeWebPreviewVirtu
     }
 }
 
-val jacksonObjectMapper = jacksonObjectMapper().also {
+val jacksonObjectMapper = JsonMapper.builder().addModule(KotlinModule.Builder().build()).also {
     it.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     it.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
-}
+}.build()
 
 // https://plugins.jetbrains.com/docs/intellij/jcef.html#jbcefjsquery
 inline fun <reified T : Any> CefBrowser.registerCallback(name: String, coroutineContext: CoroutineContext = EmptyCoroutineContext, noinline block: suspend (T) -> Any?): Disposable =

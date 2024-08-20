@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.idea.projectModel.*
 import org.jetbrains.kotlin.platform.*
 import org.jetbrains.kotlin.platform.js.*
 import org.jetbrains.kotlin.platform.jvm.*
+import org.jetbrains.kotlin.platform.wasm.*
 import org.jetbrains.plugins.gradle.model.*
 import org.jetbrains.plugins.gradle.model.data.*
 import org.jetbrains.plugins.gradle.service.project.*
@@ -114,7 +115,7 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
     companion object {
         //val basePlatforms = listOf(KotlinPlatform.JS, KotlinPlatform.JVM, KotlinPlatform.WASM)
         val basePlatforms = listOf(KotlinPlatform.JVM)
-        val platforms = setOf(JsPlatforms.DefaultSimpleJsPlatform, JdkPlatform(JvmTarget.JVM_21), WasmPlatform)
+        val platforms = setOf(JsPlatforms.DefaultSimpleJsPlatform, JdkPlatform(JvmTarget.JVM_21), WasmPlatforms.wasmJs)
         //val platform = TargetPlatform(platforms)
         val platform = TargetPlatform(setOf(JdkPlatform(JvmTarget.JVM_21)))
         val GRADLE_SYSTEM_ID = ProjectSystemId("GRADLE")
@@ -241,6 +242,7 @@ class KorgeProjectOpenProcessor : ProjectOpenProcessor() {
                         extras = IdeaKotlinExtras.empty(),
                         isTestComponent = false,
                         archiveFile = null,
+                        wasmExtensions = KotlinWasmCompilationExtensionsImpl("js")
                     )
                     sourceSetNode.add(KotlinSourceSetData.KEY, KotlinSourceSetData(KotlinSourceSetInfo(compilation)))
                 }
