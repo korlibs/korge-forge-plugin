@@ -75,8 +75,9 @@ dependencies {
     intellijPlatform {
         jetbrainsRuntime()
 
-        // https://cache-redirector.jetbrains.com/www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIC/2024.2.0.1/ideaIC-2024.2.0.1.zip
-        intellijIdeaCommunity("2024.2.0.1", useInstaller = false)
+        // https://cache-redirector.jetbrains.com/www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIC/2024.2.0.2/ideaIC-2024.2.0.2.zip
+        // https://download.jetbrains.com/idea/ideaIC-2024.2.0.2-aarch64.dmg
+        intellijIdeaCommunity("2024.2.0.2", useInstaller = false)
 
         // https://plugins.jetbrains.com/docs/intellij/plugin-dependencies.html#ids-of-bundled-plugins
         bundledPlugins(

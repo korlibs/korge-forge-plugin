@@ -1,8 +1,10 @@
 package com.soywiz.korge.intellij.image
 
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.*
 import javax.imageio.spi.*
 
+@Service
 class KorimImageReaderRegister : DumbAware {
     init {
         initialize

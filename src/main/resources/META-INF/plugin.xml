@@ -5,7 +5,7 @@
     <id>com.soywiz.korge.korge-intellij-plugin</id>
 
     <name>Korge</name>
-    <version>6.1.3</version>
+    <version>2024.2.0.2-patch-1</version>
     <vendor email="korge.game.engine@gmail.com" url="https://korge.org/">KorGE</vendor>
 
     <description><![CDATA[
@@ -282,8 +282,6 @@
         <fileType name="Image" extensions="psd"/>
         <fileType name="Image" extensions="dds"/>
         <fileType name="Image" extensions="ase"/>
-        <applicationService
-            serviceImplementation="com.soywiz.korge.intellij.image.KorimImageReaderRegister"/>
 
         <fileEditorProvider implementation="com.soywiz.korge.intellij.editor.AudioFileEditorProvider" />
         <!--
@@ -367,6 +365,10 @@
 
         <projectOpenProcessor id="korge" implementation="com.soywiz.korge.intellij.listeners.KorgeProjectOpenProcessor"/>
         <postStartupActivity implementation="com.soywiz.korge.intellij.listeners.KorgeStartupActivity"/>
+        <!--
+        <applicationService serviceInterface="" serviceImplementation="_COROUTINE" overrides="true" ></applicationService>
+        <projectService serviceImplementation="_COROUTINE" overrides=""
+        -->
     </extensions>
 
     <projectListeners>
