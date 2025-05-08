@@ -1,24 +1,26 @@
 package com.soywiz.korge.intellij.module.wizard
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.*
 import com.intellij.ide.util.projectWizard.*
-import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.progress.*
 import com.intellij.openapi.project.*
 import com.intellij.openapi.ui.*
 import com.intellij.ui.*
-import com.intellij.ui.components.JBList
-import com.intellij.ui.jcef.JCEFHtmlPanel
-import com.intellij.ui.util.preferredHeight
+import com.intellij.ui.components.*
+import com.intellij.ui.jcef.*
+import com.intellij.ui.util.*
 import com.intellij.util.ui.*
 import com.soywiz.korge.intellij.*
-import com.soywiz.korge.intellij.actions.STORE_PREFIX
-import com.soywiz.korge.intellij.actions.jacksonObjectMapper
+import com.soywiz.korge.intellij.actions.*
 import com.soywiz.korge.intellij.module.*
 import com.soywiz.korge.intellij.module.ProjectType
 import com.soywiz.korge.intellij.util.*
-import korlibs.image.color.toRgba
+import korlibs.image.color.*
 import java.awt.*
 import javax.swing.*
+import kotlin.concurrent.*
+import kotlin.time.*
+import kotlin.time.Duration.Companion.milliseconds
 
 data class KorgeTemplateRow(val title: String, val template: KorgeTemplate?)
 
@@ -221,10 +223,34 @@ class NewKorgeModuleWizardStep(
                     it.layout = BorderLayout(0, 0)
                     it.add(JPanel(BorderLayout(0, 0)).also {
                         it.add(JLabel("Templates:"), BorderLayout.LINE_START)
-                        it.add(JButton("Refresh").also {
-                           it.onClick {
-                               deleteCachedUrl(TEMPLATES_URL)
-                               refreshTemplates()
+                        val refreshLabel = "Refresh"
+                        val refreshingLabel = "Refreshing..."
+                        it.add(JButton(refreshLabel).also { button ->
+                            button.onClick {
+                                val originalBgColor = featureList.background
+                                runInUiThread {
+                                    button.text = refreshingLabel
+                                    button.isEnabled = false
+                                    featureList.isEnabled = false
+                                    featureList.background = originalBgColor.blendTo(Color.WHITE, 0.1f)
+                                }
+                                thread {
+                                    try {
+                                        val time = measureTime {
+                                            deleteCachedUrl(TEMPLATES_URL)
+                                            refreshTemplates()
+                                        }
+                                        val delayTime = (250.milliseconds - time).inWholeMilliseconds
+                                        if (delayTime > 0) Thread.sleep(delayTime)
+                                    } finally {
+                                        runInUiThread {
+                                            button.isEnabled = true
+                                            featureList.isEnabled = true
+                                            featureList.background = originalBgColor
+                                            button.text = refreshLabel
+                                        }
+                                    }
+                                }
                            }
                         }, BorderLayout.LINE_END)
                         it.border = JBUI.Borders.emptyBottom(8)
