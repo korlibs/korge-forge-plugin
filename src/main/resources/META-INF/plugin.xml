@@ -185,7 +185,9 @@
 
     </actions>
 
-
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+    <supportsKotlinPluginMode supportsK2="true" />
+    </extensions>
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Korge Resources" anchor="right" icon="AllIcons.Nodes.ResourceBundle"
                     factoryClass="org.korge.intellij.plugin.toolWindow.KorgeResourceToolWindow" secondary="true" />
