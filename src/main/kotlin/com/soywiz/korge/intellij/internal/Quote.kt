@@ -1,5 +1,8 @@
 package com.soywiz.korge.intellij.internal
 
+import java.util.Locale
+import java.util.Locale.getDefault
+
 fun String.escape(): String {
     val out = StringBuilder()
     for (n in 0 until this.length) {
@@ -86,8 +89,8 @@ val String.unquoted: String get() = this.unquote()
 
 object Hex {
     private const val DIGITS = "0123456789ABCDEF"
-    val DIGITS_UPPER = DIGITS.toUpperCase()
-    val DIGITS_LOWER = DIGITS.toLowerCase()
+    val DIGITS_UPPER = DIGITS.uppercase(getDefault())
+    val DIGITS_LOWER = DIGITS.lowercase(getDefault())
     fun encodeCharLower(v: Int): Char = DIGITS_LOWER[v]
 }
 
