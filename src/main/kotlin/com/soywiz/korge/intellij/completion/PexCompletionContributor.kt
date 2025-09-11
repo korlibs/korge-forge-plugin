@@ -11,6 +11,8 @@ import com.intellij.psi.util.*
 import com.intellij.psi.xml.*
 import com.soywiz.korge.intellij.*
 import com.soywiz.korge.intellij.util.*
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class PexCompletionContributor : CompletionContributor() {
 	companion object {
@@ -61,8 +63,8 @@ class PexCompletionContributor : CompletionContributor() {
 			rotationEndVariance(Type.VALUE);
 
 			companion object {
-				val BY_NAME_LC = values().map { it.name.toLowerCase() to it }.toMap()
-			}
+				val BY_NAME_LC = entries.associateBy { it.name.lowercase(getDefault()) }
+            }
 		}
 	}
 
@@ -130,7 +132,7 @@ class PexCompletionContributor : CompletionContributor() {
 			CompletionProvider { parameters, context, result ->
 				val tag = PsiTreeUtil.getParentOfType(parameters.position, XmlTag::class.java)
 				if (tag != null) {
-					val tagName = tag.name.toLowerCase()
+					val tagName = tag.name.lowercase(getDefault())
 					val tagInfo = PexTags.BY_NAME_LC[tagName]
 					if (tagInfo != null) {
 						for (attribute in tagInfo.type.attributes) {

@@ -2,6 +2,8 @@ package com.soywiz.korge.intellij.internal
 
 import groovy.lang.*
 import java.lang.reflect.*
+import java.util.Locale
+import java.util.Locale.getDefault
 import kotlin.math.*
 
 val Any?.dyn: Dyn get() = if (this is Dyn) this else Dyn(this)
@@ -270,7 +272,7 @@ inline class Dyn(val value: Any?) : Comparable<Dyn> {
         is Number -> toDouble() != 0.0
         is String -> {
             if (extraStrings) {
-                when (value.toLowerCase()) {
+                when (value.lowercase(getDefault())) {
                     "", "0", "false", "NaN", "null", "undefined", "ko", "no" -> false
                     else -> true
                 }

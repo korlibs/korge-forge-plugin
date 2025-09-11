@@ -8,8 +8,8 @@ plugins {
     idea
     id("org.jetbrains.intellij.platform")
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.compose") version "2.0.0"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.compose") version "2.2.0"
 }
 
 //val jvmVersion = JavaLanguageVersion.of(8)
@@ -47,13 +47,13 @@ java {
 
 kotlin {
     jvmToolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
         vendor = JvmVendorSpec.JETBRAINS
     }
 }
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
         vendor = JvmVendorSpec.JETBRAINS
     }
 }

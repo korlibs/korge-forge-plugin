@@ -5,7 +5,7 @@
     <id>com.soywiz.korge.korge-intellij-plugin</id>
 
     <name>Korge</name>
-    <version>2024.2.0.2-patch-1</version>
+    <version>2025.2.1</version>
     <vendor email="korge.game.engine@gmail.com" url="https://korge.org/">KorGE</vendor>
 
     <description><![CDATA[
@@ -185,7 +185,9 @@
 
     </actions>
 
-
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+    <supportsKotlinPluginMode supportsK2="true" />
+    </extensions>
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Korge Resources" anchor="right" icon="AllIcons.Nodes.ResourceBundle"
                     factoryClass="org.korge.intellij.plugin.toolWindow.KorgeResourceToolWindow" secondary="true" />

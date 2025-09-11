@@ -107,9 +107,12 @@ fun createGradleRunConfiguration(project: Project, taskName: String, name: Strin
     val runManager = RunManager.getInstance(project)
     val factory = GradleExternalTaskConfigurationType.getInstance().configurationFactories[0]
     val runConfiguration = factory.createConfiguration(name, GradleRunConfiguration(project, factory, taskName).also {
+        it.settings.externalProjectPath = project.basePath
         it.settings.taskNames = listOf(taskName)
         conf(it)
     })
+
+
     val runnerAndConfigurationSettings = runManager.createConfiguration(runConfiguration, factory)
 
     runManager.addConfiguration(runnerAndConfigurationSettings)
